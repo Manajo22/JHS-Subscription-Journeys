@@ -1,0 +1,2914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JioHotstar Subscription Flow Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;
+  --bg-2:#111111;
+  --bg-3:#1a1a1a;
+  --line:#262626;
+  --line-2:#3a3a3a;
+  --text:#ffffff;
+  --text-2:#a3a3a3;
+  --text-3:#525252;
+  --text-4:#404040;
+
+  /* Mobile (purple) — 1M bright → 3M mid → 12M dark */
+  --mobile:#c084fc;
+  --mobile-2:#a855f7;
+  --mobile-3m:#7c3aed;
+  --mobile-12m:#4c1d95;
+
+  /* Super (green) — 1M bright → 3M mid → 12M dark */
+  --super:#86efac;
+  --super-2:#4ade80;
+  --super-3m:#16a34a;
+  --super-12m:#14532d;
+
+  /* Premium (pink) — 1M bright → 3M mid → 12M dark */
+  --premium:#f9a8d4;
+  --premium-2:#ec4899;
+  --premium-3m:#be185d;
+  --premium-12m:#831843;
+
+  --hollywood:#d9f99d;
+  --d2c-up:#67e8f9;
+  --expiry:#fca5a5;
+  --expiry-2:#f87171;
+
+  --jio:#c084fc;
+  --vi:#a5b4fc;
+  --airtel:#93c5fd;
+  --bsnl:#fdba74;
+
+  --blue-dot:#60a5fa;
+  --orange-dot:#fb923c;
+  --mandate-text:#bef264;
+  --date-text:#e5e5e5;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;overflow-x:auto}
+
+/* ───────────── HEADER ───────────── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:14px 32px;
+  display:flex;align-items:center;gap:24px;
+}
+.brand{
+  font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text);padding-right:24px;border-right:1px solid var(--line);
+}
+.brand .accent{color:var(--mobile);font-weight:800}
+
+.search-wrap{flex:1;max-width:560px;position:relative}
+.search-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;color:var(--text-3);pointer-events:none;
+}
+#search{
+  width:100%;background:var(--bg-2);border:1px solid var(--line);
+  color:var(--text);padding:10px 14px 10px 38px;border-radius:8px;
+  font-family:'Inter',sans-serif;font-size:12.5px;letter-spacing:.01em;
+  outline:none;transition:border-color .15s,background .15s;
+}
+#search::placeholder{color:var(--text-3)}
+#search:focus{border-color:var(--mobile-2);background:var(--bg-3)}
+.search-results-count{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:10px;color:var(--text-3);letter-spacing:.04em;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.toggle{
+  display:flex;background:var(--bg-2);border:1px solid var(--line);
+  border-radius:8px;padding:3px;gap:2px;margin-left:auto;
+}
+.toggle button{
+  background:none;border:none;color:var(--text-3);cursor:pointer;
+  padding:7px 18px;font-size:11px;font-weight:700;letter-spacing:.1em;
+  border-radius:6px;font-family:'Inter',sans-serif;
+  transition:all .18s;
+}
+.toggle button:hover{color:var(--text-2)}
+.toggle button.active{background:var(--text);color:var(--bg);box-shadow:0 1px 6px rgba(255,255,255,.18)}
+
+/* ───────────── MAIN ───────────── */
+main{padding:36px 32px 80px;max-width:1840px;margin:0 auto}
+section.view{display:none}
+section.view.active{display:block}
+
+.section-head{margin-bottom:28px}
+.section-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-3);margin-bottom:8px;
+}
+.section-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.25;margin-bottom:6px}
+.section-desc{font-size:12.5px;color:var(--text-2);line-height:1.6;max-width:880px}
+
+/* ───────────── MASTER OVERVIEW ───────────── */
+.master{
+  background:var(--bg-2);border:1px solid var(--line);border-radius:14px;
+  padding:24px;margin-bottom:36px;overflow-x:auto;
+}
+.master-head{
+  display:grid;grid-template-columns:240px 1fr 1fr 1fr 1fr;gap:0;
+  padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:18px;
+}
+.master-col-label{
+  font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);
+}
+.master-svg-wrap{overflow-x:auto;overflow-y:hidden}
+
+/* ───────────── PLAN SELECTOR (D2C buttons) ───────────── */
+.plan-selector{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.plan-btn{
+  background:var(--bg-2);border:1px solid var(--line);
+  padding:14px 28px;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  transition:all .2s;font-family:'Inter',sans-serif;
+}
+.plan-btn:hover{border-color:var(--line-2);background:var(--bg-3)}
+.plan-btn .dot{width:10px;height:10px;border-radius:50%}
+.plan-btn[data-plan="mobile"] .dot{background:linear-gradient(135deg, var(--mobile) 0%, var(--mobile-3m) 50%, var(--mobile-12m) 100%)}
+.plan-btn[data-plan="super"] .dot{background:linear-gradient(135deg, var(--super) 0%, var(--super-3m) 50%, var(--super-12m) 100%)}
+.plan-btn[data-plan="premium"] .dot{background:linear-gradient(135deg, var(--premium) 0%, var(--premium-3m) 50%, var(--premium-12m) 100%)}
+.plan-btn .label{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.02em}
+.plan-btn .meta{font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;margin-left:6px}
+.plan-btn.active{background:var(--bg-3);border-color:var(--text-2)}
+.plan-btn[data-plan="mobile"].active{box-shadow:0 0 0 1px var(--mobile)}
+.plan-btn[data-plan="super"].active{box-shadow:0 0 0 1px var(--super)}
+.plan-btn[data-plan="premium"].active{box-shadow:0 0 0 1px var(--premium)}
+
+/* ───────────── PARTNER TAGS (B2B) ───────────── */
+.partner-tags{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.tag{
+  background:var(--bg-2);border:1px solid var(--line);
+  padding:8px 14px;border-radius:18px;cursor:pointer;
+  font-size:11.5px;font-weight:600;color:var(--text-2);
+  font-family:'Inter',sans-serif;letter-spacing:.02em;
+  display:flex;align-items:center;gap:8px;
+  transition:all .18s;
+}
+.tag:hover{border-color:var(--line-2);color:var(--text)}
+.tag .tag-dot{width:7px;height:7px;border-radius:50%}
+.tag[data-group="jio"] .tag-dot{background:var(--mobile)}
+.tag[data-group="vi"] .tag-dot{background:var(--vi)}
+.tag[data-group="airtel"] .tag-dot{background:var(--airtel)}
+.tag[data-group="bsnl"] .tag-dot{background:var(--bsnl)}
+.tag.active{background:var(--bg-3);border-color:var(--text);color:var(--text)}
+
+/* ───────────── FLOW PANEL ───────────── */
+.flow-panel{display:none}
+.flow-panel.active{display:block}
+.flow-panel-head{
+  display:flex;align-items:baseline;gap:16px;margin-bottom:24px;
+  padding-bottom:18px;border-bottom:1px solid var(--line);
+}
+.flow-panel-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.flow-panel-eyebrow{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3)}
+
+.flow-card{
+  background:var(--bg-2);border:1px solid var(--line);border-radius:14px;
+  padding:24px 28px;margin-bottom:18px;position:relative;
+  transition:border-color .15s;
+}
+.flow-card[data-color="mobile"]{border-color:#3a1f4a}
+.flow-card[data-color="super"]{border-color:#1f3a2a}
+.flow-card[data-color="premium"]{border-color:#3a1f2e}
+.flow-card[data-color="hollywood"]{border-color:#2e3a1f}
+.flow-card[data-color="jio"]{border-color:#3a1f4a}
+.flow-card[data-color="vi"]{border-color:#1f253a}
+.flow-card[data-color="airtel"]{border-color:#1f2a3a}
+
+.flow-row{
+  display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:flex-start;
+}
+.flow-meta{padding-top:6px}
+.flow-letter-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.flow-letter{
+  width:26px;height:26px;border-radius:50%;
+  border:1.5px solid var(--text);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-family:'Inter',sans-serif;
+}
+.flow-title{
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text);line-height:1.4;
+}
+.flow-sub{font-size:10.5px;color:var(--text-3);line-height:1.55;margin-top:8px}
+
+.timeline-wrap{overflow-x:auto;overflow-y:visible;padding:8px 0}
+.timeline-wrap svg{display:block;min-width:100%}
+
+/* ───────────── TIMELINE SVG STYLES ───────────── */
+.t-bar{rx:2}
+.t-code{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;fill:var(--text)}
+.t-code-sm{font-family:'JetBrains Mono',monospace;font-size:10px;fill:var(--text-2)}
+.t-mandate{font-family:'JetBrains Mono',monospace;font-size:10.5px;fill:var(--mandate-text);font-weight:500}
+.t-date{font-family:'JetBrains Mono',monospace;font-size:10.5px;fill:var(--text);font-weight:400}
+.t-date-sm{font-family:'JetBrains Mono',monospace;font-size:10px;fill:var(--text-2)}
+.t-script{font-family:'Caveat',cursive;font-size:18px;font-weight:600}
+.t-note{font-family:'JetBrains Mono',monospace;font-size:10.5px;fill:var(--text);font-weight:400}
+.t-note-sm{font-family:'JetBrains Mono',monospace;font-size:9.5px;fill:var(--text-2);font-weight:400}
+.t-marker-line{stroke:var(--text-3);stroke-width:1;stroke-dasharray:2 3}
+.t-curve{fill:none;stroke:var(--text-3);stroke-width:1;stroke-dasharray:2 3}
+
+.t-bar.mobile{fill:var(--mobile)}
+.t-bar.mobile-3m{fill:var(--mobile-3m)}
+.t-bar.mobile-12m{fill:var(--mobile-12m)}
+.t-bar.super{fill:var(--super)}
+.t-bar.super-3m{fill:var(--super-3m)}
+.t-bar.super-12m{fill:var(--super-12m)}
+.t-bar.premium{fill:var(--premium)}
+.t-bar.premium-3m{fill:var(--premium-3m)}
+.t-bar.premium-12m{fill:var(--premium-12m)}
+.t-bar.hollywood{fill:var(--hollywood)}
+.t-bar.d2c-up{fill:var(--d2c-up)}
+.t-bar.expiry{fill:var(--expiry-2)}
+.t-bar.jio{fill:var(--mobile)}
+.t-bar.jio-topup{fill:var(--mobile-2)}
+.t-bar.dashed{stroke:var(--text-3);stroke-dasharray:3 3;fill:none;stroke-width:1.5}
+
+.t-script.mobile{fill:var(--mobile)}
+.t-script.mobile-3m{fill:var(--mobile-3m)}
+.t-script.mobile-12m{fill:var(--mobile-12m)}
+.t-script.super{fill:var(--super)}
+.t-script.super-3m{fill:var(--super-3m)}
+.t-script.super-12m{fill:var(--super-12m)}
+.t-script.premium{fill:var(--premium)}
+.t-script.premium-3m{fill:var(--premium-3m)}
+.t-script.premium-12m{fill:var(--premium-12m)}
+.t-script.hollywood{fill:var(--hollywood)}
+.t-script.d2c-up{fill:var(--d2c-up)}
+.t-script.jio{fill:var(--mobile)}
+
+.t-dot{cursor:pointer}
+.t-dot.blue{fill:var(--blue-dot)}
+.t-dot.orange{fill:var(--orange-dot)}
+.t-dot.red{fill:var(--expiry-2)}
+
+.t-element{transition:opacity .15s}
+.t-element[data-tip]{cursor:help}
+.t-element[data-tip]:hover{opacity:.7}
+/* timeline elements carry only their own class; target data-tip directly */
+[data-tip]{cursor:help;transition:opacity .15s}
+[data-tip]:hover{opacity:.78}
+
+/* ───────────── TOOLTIP ───────────── */
+#tooltip{
+  position:fixed;background:#1c1c1f;border:1px solid var(--line-2);
+  border-radius:10px;padding:14px 16px;
+  font-size:11.5px;line-height:1.65;max-width:340px;
+  pointer-events:none;opacity:0;transition:opacity .12s;
+  z-index:9999;color:var(--text-2);box-shadow:0 12px 40px rgba(0,0,0,.5);
+}
+#tooltip.show{opacity:1}
+#tooltip .tt-title{
+  color:var(--text);font-weight:700;font-size:12.5px;
+  margin-bottom:6px;letter-spacing:.01em;
+}
+#tooltip .tt-meta{font-size:10px;color:var(--text-3);font-family:'JetBrains Mono',monospace;margin-top:8px;letter-spacing:.02em}
+#tooltip .tt-tag{display:inline-block;background:var(--bg-3);padding:2px 7px;border-radius:4px;font-size:9.5px;color:var(--text-2);margin-right:5px;font-family:'JetBrains Mono',monospace}
+
+/* ───────────── SEARCH HIGHLIGHT ───────────── */
+.search-hit{outline:2px solid var(--mobile);outline-offset:4px;border-radius:8px}
+.search-dim{opacity:.18;transition:opacity .15s}
+mark{background:#ffffff;color:#000000;padding:0 3px;border-radius:2px;font-weight:600}
+/* highlighted SVG text — !important beats the .t-code / .t-note class fills */
+text.svg-text-hit{fill:#000000 !important;font-weight:600}
+
+/* ───────────── COLUMN HEADERS (master) ───────────── */
+.master-col{display:flex;flex-direction:column;gap:6px}
+
+/* ───────────── DIAGRAM LEGEND ───────────── */
+.legend{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-size:10.5px;color:var(--text-2);
+  padding:14px 18px;background:var(--bg-2);
+  border:1px solid var(--line);border-radius:10px;margin-bottom:24px;
+}
+.legend-item{display:flex;align-items:center;gap:7px}
+.legend-bar{width:24px;height:4px;border-radius:1.5px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+.b-mobile{background:var(--mobile)}
+.b-mobile-3m{background:var(--mobile-3m)}
+.b-mobile-12m{background:var(--mobile-12m)}
+.b-super{background:var(--super)}
+.b-super-3m{background:var(--super-3m)}
+.b-super-12m{background:var(--super-12m)}
+.b-premium{background:var(--premium)}
+.b-premium-3m{background:var(--premium-3m)}
+.b-premium-12m{background:var(--premium-12m)}
+.b-hollywood{background:var(--hollywood)}
+.b-d2c-up{background:var(--d2c-up)}
+.b-expiry{background:var(--expiry-2)}
+.b-blue{background:var(--blue-dot)}
+.b-orange{background:var(--orange-dot)}
+
+/* ───────────── B2B partner panel ───────────── */
+.partner-panel{display:none}
+.partner-panel.active{display:block}
+.partner-panel-head{
+  margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--line);
+}
+.partner-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.partner-name .pname-dot{width:11px;height:11px;border-radius:50%}
+.partner-meta{font-size:11px;color:var(--text-2);line-height:1.6;display:flex;gap:18px;flex-wrap:wrap}
+.partner-meta b{color:var(--text);font-weight:600;font-family:'JetBrains Mono',monospace}
+
+.subsection-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-3);margin:32px 0 14px;
+}
+.subsection-title:first-of-type{margin-top:8px}
+
+.hidden{display:none !important}
+
+/* Empty state */
+.empty{padding:60px 24px;text-align:center;color:var(--text-3);font-size:13px}
+
+/* ── Tier labels (Mobile/Super/Premium) inside master SVG ── */
+.tier-clickable{
+  transition:opacity .15s;
+  text-decoration:none;
+}
+.tier-label-group:hover .tier-clickable{opacity:.7}
+.tier-label-group{cursor:pointer}
+
+/* SVG tier buttons (rounded-rect, look like buttons) */
+.svg-tier-btn rect{transition:fill-opacity .15s}
+.svg-tier-btn:hover rect{fill-opacity:0.28 !important}
+.svg-tier-btn{cursor:pointer}
+
+/* Plan active state highlight */
+.plan-btn.active-flash{animation:planFlash .4s ease}
+@keyframes planFlash{
+  0%{box-shadow:0 0 0 3px var(--mobile)}
+  100%{box-shadow:none}
+}
+
+/* Scroll indicator below master when plan selected */
+.plan-selected-hint{
+  display:none;text-align:center;padding:6px;
+  font-size:10px;color:var(--text-3);letter-spacing:.08em;
+  animation:fadeIn .3s ease;
+}
+.plan-selected-hint.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════════════════════ HEADER ═════════════════════════════════════════════ -->
+<header>
+  <div class="brand">JHS <span class="accent">Flow</span> Atlas</div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="search" placeholder="Search plans, journeys, dates, mandates, SKUs, partners…" autocomplete="off">
+    <span class="search-results-count" id="search-count"></span>
+  </div>
+  <div class="toggle">
+    <button data-view="d2c" class="active">D2C</button>
+    <button data-view="b2b">B2B</button>
+  </div>
+</header>
+
+<!-- ═════════════════════════════════════════════ TOOLTIP ═════════════════════════════════════════════ -->
+<div id="tooltip"></div>
+
+<main>
+
+<!-- ═════════════════════════════════════════════ D2C VIEW ═════════════════════════════════════════════ -->
+<section id="d2c-view" class="view active">
+
+<div class="section-head">
+  <div class="section-eyebrow">Direct-to-Consumer Subscription Atlas</div>
+  <div class="section-title">D2C JioHotstar — every plan, every upgrade, every cancellation path</div>
+  <div class="section-desc">Mobile, Super and Premium tiers · Monthly / 3-month / Yearly mandate variants · UPI AutoPay billing on calendar month cycles · Plus the cross-platform discovery flows that bring users in.</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-bar b-mobile"></div>
+    <div class="legend-bar b-mobile-3m" style="margin-left:2px"></div>
+    <div class="legend-bar b-mobile-12m" style="margin-left:2px"></div>
+    Mobile (1M→3M→12M)
+  </div>
+  <div class="legend-item">
+    <div class="legend-bar b-super"></div>
+    <div class="legend-bar b-super-3m" style="margin-left:2px"></div>
+    <div class="legend-bar b-super-12m" style="margin-left:2px"></div>
+    Super (1M→3M→12M)
+  </div>
+  <div class="legend-item">
+    <div class="legend-bar b-premium"></div>
+    <div class="legend-bar b-premium-3m" style="margin-left:2px"></div>
+    <div class="legend-bar b-premium-12m" style="margin-left:2px"></div>
+    Premium (1M→3M→12M)
+  </div>
+  <div class="legend-item"><div class="legend-bar b-hollywood"></div>Hollywood add-on</div>
+  <div class="legend-item"><div class="legend-bar b-d2c-up"></div>D2C upgrade</div>
+  <div class="legend-item"><div class="legend-bar b-expiry"></div>Expiry / cancellation</div>
+  <div class="legend-item"><div class="legend-dot b-blue"></div>Trigger: My Space / Settings</div>
+  <div class="legend-item"><div class="legend-dot b-orange"></div>Trigger: Content blocker / Ads-free</div>
+</div>
+
+<!-- MASTER OVERVIEW -->
+<div class="master" data-searchable data-search-title="D2C Master Overview">
+  <div class="master-svg-wrap" id="d2c-master"></div>
+</div>
+
+<!-- PLAN SELECTOR -->
+<div id="plan-hint" class="plan-selected-hint"></div>
+<div class="plan-selector" id="d2c-plan-selector">
+  <button class="plan-btn active" data-plan="mobile">
+    <span class="dot"></span><span class="label">Mobile</span><span class="meta">1M ₹79 · 3M ₹149 · 12M ₹299</span>
+  </button>
+  <button class="plan-btn" data-plan="super">
+    <span class="dot"></span><span class="label">Super</span><span class="meta">1M ₹149 · 3M ₹349 · 12M ₹699</span>
+  </button>
+  <button class="plan-btn" data-plan="premium">
+    <span class="dot"></span><span class="label">Premium</span><span class="meta">1M ₹499 · 3M ₹1,099 · 12M ₹2,199</span>
+  </button>
+</div>
+
+<!-- D2C FLOW PANELS (filled by JS) -->
+<div id="d2c-flow-panels"></div>
+
+</section>
+
+<!-- ═════════════════════════════════════════════ B2B VIEW ═════════════════════════════════════════════ -->
+<section id="b2b-view" class="view">
+
+<div class="section-head">
+  <div class="section-eyebrow">Business-to-Business Partner Atlas</div>
+  <div class="section-title">B2B JioHotstar — every partner SKU, its purchase journey & continuation paths</div>
+  <div class="section-desc">Jio · Vi · Airtel · BSNL — prepaid, postpaid, DTH, broadband bundles · 28-day, calendar month, quarterly and yearly cycles · ~186M subscribers across 16+ active SKUs.</div>
+</div>
+
+<!-- B2B LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-bar b-mobile"></div>Partner active</div>
+  <div class="legend-item"><div class="legend-bar" style="background:var(--mobile-2)"></div>Top-up / extension</div>
+  <div class="legend-item"><div class="legend-bar b-d2c-up"></div>D2C conversion</div>
+  <div class="legend-item"><div class="legend-bar b-super"></div>Super bundle</div>
+  <div class="legend-item"><div class="legend-bar b-hollywood"></div>Add-on</div>
+  <div class="legend-item"><div class="legend-bar b-expiry"></div>Expiry / lapse</div>
+  <div class="legend-item"><div class="legend-dot b-blue"></div>Trigger: in-app action</div>
+  <div class="legend-item"><div class="legend-dot b-orange"></div>Trigger: blocker / paywall</div>
+</div>
+
+<!-- B2B MASTER OVERVIEW -->
+<div class="master" data-searchable data-search-title="B2B Master Overview">
+  <div class="master-head">
+    <div class="master-col"><span class="master-col-label">Partner Activation</span></div>
+    <div class="master-col"><span class="master-col-label">API Signal</span></div>
+    <div class="master-col"><span class="master-col-label">Active Subscription</span></div>
+    <div class="master-col"><span class="master-col-label">Continuation</span></div>
+    <div class="master-col"><span class="master-col-label">End State</span></div>
+  </div>
+  <div class="master-svg-wrap" id="b2b-master"></div>
+</div>
+
+<!-- PARTNER TAG SELECTOR -->
+<div class="partner-tags" id="b2b-partner-tags"></div>
+
+<!-- B2B PARTNER PANELS (filled by JS) -->
+<div id="b2b-partner-panels"></div>
+
+</section>
+
+</main>
+
+<script>
+/* ═════════════════════════════════════════════ COLOR PALETTE ═════════════════════════════════════════════ */
+const COLORS={
+  mobile:'#c084fc', mobile2:'#a855f7', mobileDim:'#5b21b6',
+  super:'#86efac', super2:'#4ade80', superDim:'#166534',
+  premium:'#f9a8d4', premium2:'#ec4899', premiumDim:'#831843',
+  hollywood:'#d9f99d', hollywood2:'#bef264',
+  d2cUp:'#67e8f9', d2cUp2:'#22d3ee',
+  expiry:'#fca5a5', expiry2:'#f87171', expiryDim:'#7f1d1d',
+  jio:'#c084fc', jio2:'#a855f7',
+  vi:'#a5b4fc', vi2:'#818cf8',
+  airtel:'#93c5fd', airtel2:'#60a5fa',
+  bsnl:'#fdba74', bsnl2:'#fb923c',
+  blue:'#60a5fa', orange:'#fb923c',
+  white:'#ffffff', gray:'#a3a3a3', grayDim:'#525252', line:'#3a3a3a',
+  mandateText:'#bef264'
+};
+const COLOR_NAME = c => COLORS[c] || c;
+
+/* ═════════════════════════════════════════════ TIMELINE RENDERER ═════════════════════════════════════════════
+   A timeline spec contains:
+     width, height                        canvas dimensions
+     bars[]    { x, y, w, h, color, top, script, mandate, date, tip, dashed }
+     markers[] { x, label, sub, fromY, toY }       vertical dotted line with labels
+     dots[]    { x, y, color, lines, side, tip }   colored dot with stacked side text
+     notes[]   { x, y, lines, anchor, tip }        free-floating monospace text
+     scripts[] { x, y, text, color }               italic script labels
+     curves[]  { fromX, fromY, toX, toY, label, sublabel, tip }   dotted bezier
+     arrows[]  { fromX, fromY, toX, toY }          simple straight connector
+═════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+function renderTimeline(spec){
+  const w=spec.width, h=spec.height;
+  const parts=[`<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">`];
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const tipAttr = t => t ? ` data-tip="${esc(t)}"` : '';
+
+  // bars
+  (spec.bars||[]).forEach(b=>{
+    const yb=b.y, hh=b.h||5, color=b.color||'mobile';
+    if(b.dashed){
+      parts.push(`<rect class="t-bar dashed" x="${b.x}" y="${yb}" width="${b.w}" height="${hh}" rx="1.5"${tipAttr(b.tip)}/>`);
+    } else {
+      parts.push(`<rect class="t-bar ${color}" x="${b.x}" y="${yb}" width="${b.w}" height="${hh}" rx="1.5"${tipAttr(b.tip)}/>`);
+    }
+    // second parallel bar (for "Super/Premium" double-bar case)
+    if(b.doubleColor){
+      parts.push(`<rect class="t-bar ${b.doubleColor}" x="${b.x}" y="${yb+hh+3}" width="${b.w}" height="${hh}" rx="1.5"${tipAttr(b.tip)}/>`);
+    }
+    // top monospace label (e.g. "Mobile 1M")
+    if(b.top){
+      parts.push(`<text class="t-code" x="${b.x}" y="${yb-12}">${esc(b.top)}</text>`);
+    }
+    // script italic label above-right (e.g. "Valid till same date, next month")
+    if(b.script){
+      const sx = b.scriptX != null ? b.scriptX : b.x + 80;
+      parts.push(`<text class="t-script ${color}" x="${sx}" y="${yb-6}">${esc(b.script)}</text>`);
+    }
+    // mandate text below
+    if(b.mandate){
+      const my = yb + hh + (b.doubleColor ? hh+3 : 0) + 16;
+      parts.push(`<text class="t-mandate" x="${b.x}" y="${my}">${esc(b.mandate)}</text>`);
+    }
+    // date below mandate
+    if(b.date){
+      const dy = yb + hh + (b.doubleColor ? hh+3 : 0) + (b.mandate ? 30 : 16);
+      parts.push(`<text class="t-date-sm" x="${b.x}" y="${dy}">${esc(b.date)}</text>`);
+    }
+  });
+
+  // dotted vertical markers with top labels
+  (spec.markers||[]).forEach(m=>{
+    const fy = m.fromY != null ? m.fromY : 60;
+    const ty = m.toY != null ? m.toY : (h-30);
+    parts.push(`<line class="t-marker-line" x1="${m.x}" y1="${fy}" x2="${m.x}" y2="${ty}"/>`);
+    if(m.label){
+      const lines = m.label.split('\n');
+      // Collision guard: if a bar STARTS at this marker's x and carries a top label at the
+      // same height as the marker label, the two would overlap. Push the marker label to the
+      // LEFT of the line (right-anchored) so the bar's top label sits clear to the right.
+      const labelTopY = fy + 11;
+      const collides = (spec.bars||[]).some(b =>
+        b.top && Math.abs((b.x||0) - m.x) < 36 && Math.abs((b.y||0) - labelTopY) < 42);
+      const anchor = collides ? 'end' : 'middle';
+      const lx = collides ? m.x - 12 : m.x;
+      lines.forEach((line,i)=>{
+        parts.push(`<text class="t-date" x="${lx}" y="${fy + 11 + i*13}" text-anchor="${anchor}">${esc(line)}</text>`);
+      });
+      if(m.sub){
+        parts.push(`<text class="t-date-sm" x="${lx}" y="${fy + 11 + lines.length*13}" text-anchor="${anchor}">${esc(m.sub)}</text>`);
+      }
+    }
+  });
+
+  // dots with side labels
+  (spec.dots||[]).forEach(d=>{
+    parts.push(`<circle class="t-dot ${d.color}" cx="${d.x}" cy="${d.y}" r="4.5"${tipAttr(d.tip)}/>`);
+    if(d.lines){
+      const lines = Array.isArray(d.lines) ? d.lines : [d.lines];
+      const side = d.side || 'below';
+      lines.forEach((line,i)=>{
+        if(side==='right'){
+          parts.push(`<text class="t-note-sm" x="${d.x+10}" y="${d.y+4+i*12}">${esc(line)}</text>`);
+        } else if(side==='left'){
+          parts.push(`<text class="t-note-sm" x="${d.x-10}" y="${d.y+4+i*12}" text-anchor="end">${esc(line)}</text>`);
+        } else {
+          parts.push(`<text class="t-note-sm" x="${d.x}" y="${d.y+16+i*12}" text-anchor="middle">${esc(line)}</text>`);
+        }
+      });
+    }
+  });
+
+  // free-floating notes
+  (spec.notes||[]).forEach(n=>{
+    const lines = Array.isArray(n.lines) ? n.lines : [n.lines];
+    const anchor = n.anchor || 'start';
+    lines.forEach((line,i)=>{
+      const cls = i===0 ? 't-note' : 't-note-sm';
+      parts.push(`<text class="${cls}" x="${n.x}" y="${n.y + i*13}" text-anchor="${anchor}"${tipAttr(n.tip)}>${esc(line)}</text>`);
+    });
+  });
+
+  // script italic notes (free-floating)
+  (spec.scripts||[]).forEach(s=>{
+    parts.push(`<text class="t-script ${s.color||'mobile'}" x="${s.x}" y="${s.y}" text-anchor="${s.anchor||'start'}">${esc(s.text)}</text>`);
+  });
+
+  // curves (dotted bezier)
+  (spec.curves||[]).forEach(c=>{
+    const fx=c.fromX, fy=c.fromY, tx=c.toX, ty=c.toY;
+    const cpx1 = fx + (tx-fx)*0.5, cpy1 = fy;
+    const cpx2 = fx + (tx-fx)*0.5, cpy2 = ty;
+    parts.push(`<path class="t-curve" d="M${fx},${fy} C${cpx1},${cpy1} ${cpx2},${cpy2} ${tx},${ty}"/>`);
+    if(c.label){
+      const mx = (fx+tx)/2, my = (fy+ty)/2 - 4;
+      const lines = c.label.split('\n');
+      lines.forEach((line,i)=>{
+        parts.push(`<text class="t-note-sm" x="${mx+8}" y="${my + i*12}">${esc(line)}</text>`);
+      });
+    }
+  });
+
+  // straight arrows
+  (spec.arrows||[]).forEach(a=>{
+    parts.push(`<line class="t-marker-line" x1="${a.fromX}" y1="${a.fromY}" x2="${a.toX}" y2="${a.toY}"/>`);
+  });
+
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+/* ═════════════════════════════════════════════ MASTER OVERVIEW: D2C ═════════════════════════════════════════════ */
+function renderD2CMaster(){
+/* ═══════════════════════════════════════════════════════════════════════════════════
+   D2C MASTER OVERVIEW v4
+   Canvas 2460 × 900
+   Platform Discovery 20–1180  |  Subscription 1180–1490  |  Upgrades 1490–1860
+   Cancellation 1860–2080  |  End State 2080–2460
+   Right portion = v3 layout shifted by DX = 480
+═══════════════════════════════════════════════════════════════════════════════════ */
+  const W=2520, H=960, DX=480;
+  const p=[];
+  const E=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  p.push(`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`);
+
+  /* ── palette ── */
+  const BLUE='#6b9bd8', YEL='#ddd89a', CYAN='#5bc0de', ORG='#e0a82e', RED='#d9534f';
+  const M='#c084fc', S='#86efac', P='#f9a8d4', Rd='#f87171', D='#3a3a3a';
+  const caveat='font-family="\'Caveat\',cursive"';
+  const mono='font-family="\'JetBrains Mono\',monospace"';
+  const inter='font-family="\'Inter\',sans-serif"';
+
+  /* ── defs: fade gradients ── */
+  p.push(`<defs>
+    <linearGradient id="fadeYel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${YEL}" stop-opacity="1"/>
+      <stop offset="1" stop-color="${YEL}" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fadeOrg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${ORG}" stop-opacity="1"/>
+      <stop offset="1" stop-color="${ORG}" stop-opacity="0"/>
+    </linearGradient>
+  </defs>`);
+
+  /* ── helpers ── */
+  const wtxt=(x,y,s,sz=11)=>`<text x="${x}" y="${y}" ${inter} font-size="${sz}" fill="#e8e8e8">${E(s)}</text>`;
+  const note=(x,y,s)=>`<text x="${x}" y="${y}" ${mono} font-size="10.5" fill="#a3a3a3">${E(s)}</text>`;
+  const codeLbl=(x,y,s)=>`<text x="${x}" y="${y}" ${mono} font-size="11.5" fill="#e5e5e5">${E(s)}</text>`;
+  const mand=(x,y,s)=>`<text x="${x}" y="${y}" ${mono} font-size="10" fill="#bef264">${E(s)}</text>`;
+  const scr=(x,y,s,c,sz=15)=>`<text x="${x}" y="${y}" ${caveat} font-size="${sz}" fill="${c}">${E(s)}</text>`;
+  const path=(d,c,w=2.4,dash)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+  const dbox=(x,y,w,h,c,tip)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="#1a0a0a" stroke="${c}" stroke-width="1.3" stroke-dasharray="4 3"${tip?` data-tip="${E(tip)}" class="t-element"`:''}/>`;
+  const L=(x1,y1,x2,y2,c,w=1.3,dash)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+  const H_=(y,x1,x2,c,w=1.3)=>L(x1,y,x2,y,c,w);
+  const V_=(x,y1,y2,c,w=1.3)=>L(x,y1,x,y2,c,w);
+
+  /* ── column headers ── */
+  const hdr=(x,s)=>`<text x="${x}" y="34" ${inter} font-size="11" font-weight="700" letter-spacing="2.5" fill="#666">${s}</text>`;
+  p.push(hdr(30,'PLATFORM DISCOVERY'));
+  p.push(hdr(1192,'SUBSCRIPTION'));
+  p.push(hdr(1500,'UPGRADES'));
+  p.push(hdr(1872,'CANCELLATION'));
+  p.push(hdr(2092,'END STATE'));
+
+  /* column dividers */
+  [1180,1490,1860,2080].forEach(x=>p.push(`<line x1="${x}" y1="48" x2="${x}" y2="${H-14}" stroke="${D}" stroke-width="0.8" stroke-dasharray="3 4"/>`));
+
+  /* ═══════════════════════ PLATFORM DISCOVERY ═══════════════════════ */
+
+  /* entry texts */
+  p.push(wtxt(30,150,'User clicks on JHS content'));
+  p.push(wtxt(30,166,'title on search engine'));
+  p.push(wtxt(30,278,'User clicks on a JHS'));
+  p.push(wtxt(30,294,'Ad on other platforms'));
+  p.push(wtxt(30,560,'User searches for'));
+  p.push(wtxt(30,576,'JHS app specifically'));
+  p.push(wtxt(30,685,'User directly opens App'));
+  p.push(wtxt(30,701,'after downloading'));
+
+  /* BLUE entries → merge (top) ; blue then becomes yellow at the merge */
+  p.push(path('M110,172 H235 V312', BLUE, 2.4));     /* entry 1 down to merge */
+  p.push(path('M110,300 H235', BLUE, 2.4));           /* entry 2 into merge */
+
+  /* YELLOW — Details Page */
+  p.push(scr(245,300,'User is on Details Page',YEL,15));
+  p.push(path('M235,312 H560', YEL, 2.4));            /* details horizontal */
+  p.push(path('M560,205 V425', YEL, 2.4));            /* 3-way split spine */
+
+  /* top branch — User Watches Free Content (fades) */
+  p.push(wtxt(635,183,'User Watches'));
+  p.push(wtxt(635,199,'Free Content'));
+  p.push(path('M560,205 H845', YEL, 2.4));
+  p.push(path('M845,205 H905', 'url(#fadeYel)', 2.4)); /* fade out */
+
+  /* mid branch — Hollywood → Subscribe Blocker */
+  p.push(wtxt(635,266,'User Encounters'));
+  p.push(wtxt(635,282,'Hollywood'));
+  p.push(wtxt(635,298,'Content'));
+  p.push(path('M560,312 H1010', YEL, 2.4));
+  p.push(dbox(1010,294,132,36,RED,'Subscribe Blocker — paywall when user hits premium/Hollywood content. Routes to Subscription.'));
+  p.push(`<text x="1076" y="317" ${mono} font-size="10.5" fill="${RED}" text-anchor="middle">Subscribe Blocker</text>`);
+
+  /* bottom branch — Honeypot Blocked → Login Wall Blocker */
+  p.push(wtxt(620,375,'User Encounters'));
+  p.push(wtxt(620,391,'Honeypot Blocked'));
+  p.push(wtxt(620,407,'Content'));
+  p.push(path('M560,425 H760', YEL, 2.4));
+  p.push(dbox(760,408,132,34,RED,'Login Wall Blocker — content gated behind login. Leads to the Honeypot free-preview experience.'));
+  p.push(`<text x="826" y="429" ${mono} font-size="10.5" fill="${RED}" text-anchor="middle">Login Wall Blocker</text>`);
+
+  /* ORANGE — Honeypot experience */
+  p.push(scr(905,420,'User experiences Honeypot',ORG,14));
+  /* junction at x=960: split into (a) 4 Hours Free dashed rightward, (b) continue to Subscribe Blocker */
+  p.push(path('M892,425 H960', ORG, 2.4));             /* out of login wall → junction dot */
+  p.push(path('M960,425 H1070 V330', ORG, 2.4));       /* continue right then up to Subscribe Blocker */
+  /* branch: Monthly 4 Hours Free — dashed, diverges downward-right from junction, fades before blue line */
+  p.push(path('M960,425 V460 H1060', ORG, 2.4, '7 6')); /* dip down then right — fades well before x=1136 */
+  p.push(path('M1060,460 H1100', 'url(#fadeOrg)', 2.4));
+  p.push(wtxt(970,485,'Monthly 4 Hours Free'));
+  /* junction dot to show split */
+  p.push(`<circle cx="960" cy="425" r="4" fill="${ORG}"/>`);
+
+  /* CYAN — My Space (branches off Details, changes colour) */
+  p.push(`<circle cx="440" cy="312" r="3.5" fill="${CYAN}"/>`);  /* branch junction */
+  p.push(scr(470,548,'User is on My Space',CYAN,15));
+  p.push(path('M440,312 V560 H720 V425 H760', CYAN, 2.4));  /* down, right, up, right into Login Wall Blocker */
+
+  /* BLUE — Homepage (bottom entries) → travels all the way to Subscribe Blocker */
+  p.push(path('M110,582 H235 V615', BLUE, 2.4));       /* entry 3 */
+  p.push(path('M110,648 H235 V615', BLUE, 2.4));       /* entry 4 */
+  p.push(scr(245,608,'User is on Homepage',BLUE,15));
+  p.push(path('M235,615 H460 V760 H1136 V330', BLUE, 2.4)); /* right, down, across bottom, up to Subscribe Blocker */
+
+  /* User Directly Subscribes From Homepage (labels the bottom run) */
+  p.push(wtxt(470,785,'User Directly'));
+  p.push(wtxt(470,801,'Subscribes From'));
+  p.push(wtxt(470,817,'Homepage'));
+
+  /* ═══════════════════════ SUBSCRIPTION (shifted +DX) ═══════════════════════ */
+  const BX=838+DX, BW=152, DISTX=830+DX;
+
+  function tierBlock(baseColor, shades, planKey, label, rows, prices){
+    const [y1,y2,y3]=rows;
+    const midY=y2;
+    const [c1,c2,c3]=shades;
+    // spine and horizontals per shade
+    p.push(V_(DISTX,y1,y3,baseColor));
+    [[y1,c1],[y2,c2],[y3,c3]].forEach(([y,c])=>p.push(H_(y,DISTX,BX,c)));
+    p.push(H_(midY,804+DX,DISTX,baseColor));
+    p.push(`<g style="cursor:pointer" onclick="selectPlan('${planKey}')" class="svg-tier-btn" data-tip="Open ${label} journeys — A, B, C, D below">`);
+    p.push(`  <rect x="${712+DX}" y="${midY-19}" width="92" height="38" rx="9" fill="${baseColor}" fill-opacity="0.12" stroke="${baseColor}" stroke-width="1.6"/>`);
+    p.push(`  <text x="${758+DX}" y="${midY+5}" ${inter} font-size="14" font-weight="700" fill="${baseColor}" text-anchor="middle">${label}</text>`);
+    p.push(`</g>`);
+    const names=['1 Month','3 Months','12 Months'];
+    rows.forEach((y,i)=>{
+      const c=[c1,c2,c3][i];
+      p.push(codeLbl(BX, y-9, names[i]));
+      p.push(`<rect x="${BX}" y="${y}" width="${BW}" height="5" rx="2" fill="${c}" data-tip="${label} ${names[i]} · ${prices[i]} · ${i===0?'monthly':i===1?'quarterly':'yearly'} mandate"/>`);
+      p.push(mand(BX, y+20, 'Create Mandate: '+prices[i]));
+    });
+  }
+  const M1='#c084fc', M2='#7c3aed', M3='#4c1d95';
+  const S1='#86efac', S2='#16a34a', S3='#14532d';
+  const P1='#f9a8d4', P2='#be185d', P3='#831843';
+  tierBlock(M1,[M1,M2,M3],'mobile','Mobile',[130,210,290],['Rs.79','Rs.149','Rs.299']);
+  tierBlock(S1,[S1,S2,S3],'super','Super',[400,480,560],['Rs.149','Rs.349','Rs.699']);
+  tierBlock(P1,[P1,P2,P3],'premium','Premium',[670,750,830],['Rs.499','Rs.1,099','Rs.2,199']);
+
+  /* ═══════════════════════ UPGRADES (shifted +DX) ═══════════════════════ */
+  const BEX=BX+BW;
+  const UX=1018+DX, CX=1066+DX, TX=1086+DX;
+
+  function upgrades(color, oneMonthY, items){
+    p.push(H_(oneMonthY+2, BEX, UX, color));
+    p.push(note(UX+6, oneMonthY-10, items.header[0]));
+    p.push(note(UX+6, oneMonthY+2,  items.header[1]));
+    const lastY=oneMonthY+22+(items.list.length-1)*18;
+    p.push(V_(UX, oneMonthY+2, lastY+4, color, 1));
+    items.list.forEach(([ltr,t],i)=>{
+      const iy=oneMonthY+22+i*18;
+      p.push(H_(iy+3, UX, CX-8, color, 1));
+      p.push(`<circle cx="${CX}" cy="${iy+3}" r="7.5" fill="none" stroke="#fff" stroke-width="1"/>`);
+      p.push(`<text x="${CX}" y="${iy+7}" ${inter} font-size="8.5" fill="#fff" text-anchor="middle">${ltr}</text>`);
+      p.push(note(TX, iy+7, t));
+    });
+    const cy=lastY+30;
+    p.push(`<text x="${UX+6}" y="${cy}" ${mono} font-size="10.5" fill="${color}">Mandate Cancelled,</text>`);
+    p.push(`<text x="${UX+6}" y="${cy+13}" ${mono} font-size="10.5" fill="${color}">Plan Expiry</text>`);
+    const ly=cy+23;
+    p.push(H_(ly, UX+6, 1860, Rd, 1.6));
+    return ly;
+  }
+  const mY=upgrades(M,130,{header:['1 Month Mobile','User Journeys'],
+    list:[['A','Continue on 1 Month Mandate'],['B','Change Mandate Duration'],['C','Upgrade to Super / Premium'],['D','Hollywood Add-on']]});
+  const sY=upgrades(S,400,{header:['1 Month Super','User Journeys'],
+    list:[['A','Continue on 1 Month Mandate'],['B','Change Mandate Duration'],['C','Upgrade to Premium']]});
+  const pY=upgrades(P,670,{header:['1 Month Premium','User Journeys'],
+    list:[['A','Continue on 1 Month Mandate'],['B','Change Mandate Duration']]});
+
+  /* ═══════════════════════ CANCELLATION + END STATE (matches reference) ═══════════════════════ */
+  /* mY≈259  sY≈511  pY≈763 — three plan expiry lines arrive from UPGRADES at x=1860 */
+
+  const ENTER_X  = 1860;     /* where the three lines enter the cancellation column */
+  const BRACKET_X= 2000;     /* rounded bracket convergence x */
+  const R        = 16;       /* corner radius */
+  const conY     = sY;       /* lines converge at the Super (middle) level */
+  const PCBE_X   = 2300;     /* "Plan Cancelled Before Expiry" marker */
+  const PEXP_X   = 2430;     /* "Plan Expires" marker */
+  const END_X    = PEXP_X;   /* merged line runs to the Plan Expires marker */
+
+  /* ── Mobile arm: in from left, round DOWN into the spine toward conY ── */
+  p.push(path(`M${ENTER_X},${mY} H${BRACKET_X-R} Q${BRACKET_X},${mY} ${BRACKET_X},${mY+R} V${conY}`, Rd, 1.6));
+  /* ── Premium arm: in from left, round UP into the spine toward conY ── */
+  p.push(path(`M${ENTER_X},${pY} H${BRACKET_X-R} Q${BRACKET_X},${pY} ${BRACKET_X},${pY-R} V${conY}`, Rd, 1.6));
+  /* ── Super line: continuous, passes through the junction and exits right ── */
+  p.push(H_(conY, ENTER_X, END_X, Rd, 1.6));
+
+  /* ── My Space → Settings cancel dot, sitting on the merged line ── */
+  const dotX = 2070;
+  p.push(`<circle cx="${dotX}" cy="${conY}" r="4.5" fill="${BLUE}" data-tip="User cancels via My Space → Settings → Cancel Subscription"/>`);
+  p.push(note(dotX-2, conY+18, 'My Space → Settings'));
+  /* ── 'Plan Cancelled' script further along the line ── */
+  p.push(scr(2150, conY-8, 'Plan Cancelled', Rd, 15));
+
+  /* ── Two vertical dotted markers ── */
+  const markTop = conY - 95, markBot = conY + 120;
+  p.push(`<line x1="${PCBE_X}" y1="${markTop}" x2="${PCBE_X}" y2="${markBot}" stroke="${D}" stroke-width="0.9" stroke-dasharray="2 3"/>`);
+  p.push(`<line x1="${PEXP_X}" y1="${markTop}" x2="${PEXP_X}" y2="${markBot}" stroke="${D}" stroke-width="0.9" stroke-dasharray="2 3"/>`);
+
+  /* ── Marker labels above ── */
+  p.push(note(PCBE_X+4, markTop-14, 'Plan Cancelled'));
+  p.push(note(PCBE_X+4, markTop-2,  'Before Expiry'));
+  p.push(note(PEXP_X+4, markTop-8,  'Plan Expires'));
+
+  /* ── Stacked 'Plan Continues' bars (Mobile/Super/Premium) below the line, between markers ── */
+  const barX = PCBE_X, barW = PEXP_X - PCBE_X;
+  const barY = conY + 38;
+  [['#c084fc'],['#f9a8d4'],['#86efac']].forEach((c,i)=>{
+    p.push(`<rect x="${barX}" y="${barY + i*8}" width="${barW}" height="5" rx="2" fill="${c[0]}"/>`);
+  });
+  /* connector elbow from line down to the stacked bars */
+  p.push(path(`M${(barX+PEXP_X)/2},${conY} Q${(barX+PEXP_X)/2},${barY-8} ${barX+8},${barY-2}`, Rd, 1.2, '3 3'));
+
+  /* ── 'Plan Continues for remaining X days' label below the bars ── */
+  p.push(note(barX+4, barY+34, 'Plan Continues'));
+  p.push(note(barX+4, barY+47, 'for remaining'));
+  p.push(note(barX+4, barY+60, 'X days'));
+
+  p.push('</svg>');
+  return p.join('\n');
+}
+
+</script>
+
+<script>
+/* ═════════════════════════════════════════════ D2C FLOW DATA ═════════════════════════════════════════════ */
+
+/* ───── MOBILE FLOWS (purple) ───── */
+const MOBILE_A = {
+  title: 'USER CONTINUES ON 1 MONTH MANDATE',
+  meta: 'Default state · UPI mandate auto-renews on calendar-month cycle · No user action required',
+  spec: {
+    width: 1500, height: 140,
+    bars: [
+      { x: 260, y: 70, w: 1180, h: 5, color:'mobile',
+        top:'Mobile 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.79',
+        date:'march 1',
+        tip:'D2C Mobile Monthly Plan\nPrice: ₹79/month\nSKU: JHSMobileLite.IN.Month.79\nBilling: UPI AutoPay, calendar-month\nEntitlement: 1 screen, 480p, Indian content' }
+    ],
+    markers: [
+      { x: 1080, label: 'Mandate\nReminder', sub: 'march 28', fromY: 20, toY: 110, tip:'Mandate Reminder Notification\nSent 3 days before debit\nMandate execution upcoming' },
+      { x: 1180, label: 'Money\nDeducted', sub: 'apr 1', fromY: 20, toY: 110, tip:'UPI AutoPay debit executed\n₹79 charged · New 1-month cycle begins\nReceipt SMS + in-app notification' }
+    ]
+  }
+};
+
+const MOBILE_B = {
+  title: 'USER SWITCHES TO 3 MONTHS MOBILE / 1 YEAR MOBILE',
+  meta: 'Mid-cycle upgrade · proration applied · new mandate created with leftover days compensated',
+  spec: {
+    width: 1500, height: 200,
+    bars: [
+      { x: 260, y: 70, w: 720, h: 5, color:'mobile',
+        top:'Mobile 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.79',
+        date:'march 1',
+        tip:'Original Mobile 1M plan\nUser pays ₹79 on march 1\nUpgrades on day 23 (march 23)' },
+      { x: 980, y: 150, w: 460, h: 4, color:'mobile-3m', doubleColor:'mobile-12m',
+        top:'Mobile 3M/1Y',
+        script:'',
+        mandate:'Create Mandate: Rs.149/Rs.299 (excluding mobile leftover days compensation)',
+        date:'',
+        tip:'Upgraded Mobile 3M or 1Y plan\nNew mandate created\nLeftover days from 1M plan adjusted in price' }
+    ],
+    markers: [
+      { x: 980, label:'User Upgrades\nto 3M, 1Y', sub:'march 23', fromY: 20, toY: 170, tip:'Upgrade trigger point\nUser initiates upgrade via My Space / Settings' }
+    ],
+    dots: [
+      { x: 940, y: 158, color:'blue', lines:['Upgrade on','My Space'], side:'left',
+        tip:'Surface: My Space → Subscription → Change Plan\nLists all upgrade targets with proration preview' }
+    ],
+    curves: [
+      { fromX: 980, fromY: 75, toX: 1040, toY: 150, label:'X remaining days/\n31 of the amount adjusted',
+        tip:'Proration formula\nLeftover days × (1M price / 31) credited toward new plan' }
+    ]
+  }
+};
+
+const MOBILE_C = {
+  title: 'USER UPGRADES TO SUPER / PREMIUM',
+  meta: 'Tier jump · triggered by Hollywood Blocker, My Space, or TV login · Super (green) or Premium (pink) mandate created',
+  spec: {
+    width: 1500, height: 230,
+    bars: [
+      { x: 260, y: 70, w: 720, h: 5, color:'mobile',
+        top:'Mobile 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.79',
+        date:'march 1',
+        tip:'Original Mobile 1M · Terminated at upgrade' },
+      { x: 980, y: 160, w: 460, h: 5, color:'super', doubleColor:'premium',
+        top:'Super/Premium 1M/3M/1Y',
+        mandate:'Create Mandate: Rs.149/Rs.349/Rs.699/Rs.499/Rs.1,099/Rs.2,199',
+        date:'',
+        tip:'Two parallel bars represent Super and Premium tier choices\nSuper: ₹149/₹349/₹699 (1M/3M/1Y)\nPremium: ₹499/₹1099/₹2199 (1M/3M/1Y)' }
+    ],
+    markers: [
+      { x: 980, label:'User Upgrades to\nSuper/Premium', sub:'march 23', fromY: 20, toY: 200, tip:'Tier-upgrade trigger point' }
+    ],
+    dots: [
+      { x: 940, y: 110, color:'orange', lines:['Upgrade from','Hollywood Blocker'], side:'left',
+        tip:'Surface: Paywall overlay\nFired when user taps a Hollywood title on Mobile plan\nOne-tap deeplink to Super/Premium picker' },
+      { x: 940, y: 142, color:'blue', lines:['Upgrade on','My Space'], side:'left',
+        tip:'Surface: My Space → Subscription → Change Plan\nDeliberate upgrade flow' },
+      { x: 940, y: 178, color:'blue', lines:['User logs in','on TV'], side:'left',
+        tip:'Surface: TV / smart-TV app login\nMobile plan doesn\'t allow TV casting → prompts tier upgrade' }
+    ],
+    curves: [
+      { fromX: 980, fromY: 75, toX: 1040, toY: 160, label:'X remaining days/31\nof the amount adjusted',
+        tip:'Proration on upgrade\nUnused Mobile days credited against Super/Premium price' }
+    ]
+  }
+};
+
+const MOBILE_D = {
+  title: 'HOLLYWOOD ADD-ON',
+  meta: 'User stays on Mobile but adds Hollywood (₹49/mo or ₹129/3M) · creates a second parallel mandate · base plan continues unchanged',
+  spec: {
+    width: 1580, height: 235,
+    bars: [
+      { x: 260, y: 80, w: 580, h: 5, color:'mobile-3m',
+        top:'Mobile 3M',
+        script:'Valid till same date, post 3 months',
+        scriptX: 360,
+        mandate:'Create Mandate: Rs.149',
+        date:'march 1',
+        tip:'Mobile 3M base plan continues uninterrupted\nHollywood add-on is a separate parallel mandate' },
+      { x: 980, y: 80, w: 480, h: 5, color:'mobile-3m',
+        top:'Mobile 3M + Add-on 3M',
+        mandate:'Rs.149 + Rs.129',
+        date:'',
+        tip:'After base plan renewal on june 1\nBoth mandates renew together · Total ₹278' },
+      { x: 840, y: 165, w: 620, h: 5, color:'hollywood',
+        top:'Hollywood Add-on',
+        mandate:'Create Mandate: Rs.129 — compensation for 23 days of 3 months passed',
+        tip:'Hollywood add-on mandate\nPrice: ₹49/month or ₹129/3 months\nProrated to align with base plan expiry' }
+    ],
+    markers: [
+      { x: 840, label:'User gets\nHollywood Add-on', sub:'march 23', fromY: 40, toY: 205, tip:'Add-on activation trigger' },
+      { x: 980, label:'Plan renewal', sub:'june 1', fromY: 40, toY: 205, tip:'Base Mobile 3M plan expiry & auto-renewal\nHollywood add-on auto-renews alongside' }
+    ],
+    dots: [
+      { x: 800, y: 130, color:'orange', lines:['Upgrade from','Hollywood Blocker'], side:'left',
+        tip:'Surface: Paywall when tapping Hollywood title\nGives user option to add Hollywood without tier upgrade' }
+    ],
+    notes: [
+      { x: 910, y: 22, lines:['2M+7 days'], anchor:'middle', tip:'Time between add-on activation (march 23) and base plan renewal (june 1)' }
+    ]
+  }
+};
+
+/* ───── SUPER FLOWS (green) ───── */
+const SUPER_A = {
+  title: 'USER CONTINUES ON 1 MONTH MANDATE',
+  meta: 'Super tier · 1080p · 2 concurrent screens · Hollywood included · TV casting',
+  spec: {
+    width: 1500, height: 140,
+    bars: [
+      { x: 260, y: 70, w: 1180, h: 5, color:'super',
+        top:'Super 1M',
+        script:'Valid till same date, next month',
+        scriptX: 530,
+        mandate:'Create Mandate: Rs.149',
+        date:'march 1',
+        tip:'D2C Super Monthly Plan\nPrice: ₹149/month\nSKU: HotstarSuper.IN.1Month.149\nEntitlement: 1080p, 2 screens, Hollywood, TV casting' }
+    ],
+    markers: [
+      { x: 1080, label:'Mandate\nReminder', sub:'march 28', fromY: 20, toY: 110, tip:'Mandate Reminder Notification\nSent 3 days before debit' },
+      { x: 1180, label:'Money\nDeducted', sub:'apr 1', fromY: 20, toY: 110, tip:'UPI AutoPay debit executed\n₹149 charged · New 1-month cycle begins' }
+    ]
+  }
+};
+
+const SUPER_B = {
+  title: 'USER SWITCHES TO 3 MONTHS SUPER / 1 YEAR SUPER',
+  meta: 'Cycle extension within Super tier · proration adjusts new mandate · saves ₹50/3M or ₹1089/year vs monthly',
+  spec: {
+    width: 1500, height: 200,
+    bars: [
+      { x: 260, y: 70, w: 720, h: 5, color:'super',
+        top:'Super 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.149',
+        date:'march 1',
+        tip:'Original Super 1M plan · Terminated on upgrade' },
+      { x: 980, y: 150, w: 460, h: 4, color:'super-3m', doubleColor:'super-12m',
+        top:'Super 3M/1Y',
+        mandate:'Create Mandate: Rs.349/Rs.699 (excluding mobile leftover days compensation)',
+        tip:'Super 3M or 1Y plan after upgrade\nSKU: HotstarSuper.IN.3Month.349 / HotstarSuper.IN.Year.699' }
+    ],
+    markers: [
+      { x: 980, label:'User Upgrades\nto 3M, 1Y', sub:'march 23', fromY: 20, toY: 170, tip:'Cycle-upgrade trigger point' }
+    ],
+    dots: [
+      { x: 940, y: 158, color:'blue', lines:['Upgrade on','My Space'], side:'left',
+        tip:'Surface: My Space → Subscription → Change Plan' }
+    ],
+    curves: [
+      { fromX: 980, fromY: 75, toX: 1040, toY: 150, label:'X remaining days/\n31 of the amount adjusted',
+        tip:'Proration formula\nLeftover days × (1M price / 31) credited toward new plan' }
+    ]
+  }
+};
+
+const SUPER_C = {
+  title: 'USER UPGRADES TO PREMIUM',
+  meta: 'Tier jump to Premium · 4K, 4 screens, all content · triggered via Ads-free banner or My Space',
+  spec: {
+    width: 1500, height: 220,
+    bars: [
+      { x: 260, y: 70, w: 720, h: 5, color:'super',
+        top:'Super 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.149',
+        date:'march 1',
+        tip:'Original Super 1M plan' },
+      { x: 980, y: 150, w: 460, h: 5, color:'premium',
+        top:'Premium 1M/3M/1Y',
+        mandate:'Create Mandate: Rs.499/Rs.1,099/Rs. 2,199',
+        tip:'Premium tier · 4K, 4 screens, all content (Indian + Hollywood + Sports)\nMonthly ₹499, Quarterly ₹1,099, Yearly ₹2,199' }
+    ],
+    markers: [
+      { x: 980, label:'User Upgrades to\nSuper/Premium', sub:'march 23', fromY: 20, toY: 190, tip:'Tier-upgrade trigger' }
+    ],
+    dots: [
+      { x: 940, y: 110, color:'orange', lines:['Upgrade from','"Go Ads free"'], side:'left',
+        tip:'Surface: "Go Ads Free" banner inside content playback\nPremium tier removes ad rolls\nOne-tap deeplink to Premium picker' },
+      { x: 940, y: 145, color:'blue', lines:['Upgrade on','My Space'], side:'left',
+        tip:'Surface: My Space → Subscription → Change Plan' }
+    ],
+    curves: [
+      { fromX: 980, fromY: 75, toX: 1040, toY: 150, label:'X remaining days/31\nof the amount adjusted',
+        tip:'Proration on upgrade\nUnused Super days credited against Premium price' }
+    ]
+  }
+};
+
+/* ───── PREMIUM FLOWS (pink) ───── */
+const PREMIUM_A = {
+  title: 'USER CONTINUES ON 1 MONTH MANDATE',
+  meta: 'Premium tier · 4K · 4 concurrent screens · all content · zero ads',
+  spec: {
+    width: 1500, height: 140,
+    bars: [
+      { x: 260, y: 70, w: 1180, h: 5, color:'premium',
+        top:'Premium 1M',
+        script:'Valid till same date, next month',
+        scriptX: 530,
+        mandate:'Create Mandate: Rs.499',
+        date:'march 1',
+        tip:'D2C Premium Monthly Plan\nPrice: ₹499/month\nSKU: HotstarPremium.IN.1Month.499\nEntitlement: 4K, 4 screens, all content, no ads' }
+    ],
+    markers: [
+      { x: 1080, label:'Mandate\nReminder', sub:'march 28', fromY: 20, toY: 110, tip:'Mandate Reminder · 3 days before debit' },
+      { x: 1180, label:'Money\nDeducted', sub:'apr 1', fromY: 20, toY: 110, tip:'UPI AutoPay debit · ₹499' }
+    ]
+  }
+};
+
+const PREMIUM_B = {
+  title: 'USER SWITCHES TO 3 MONTHS PREMIUM / 1 YEAR PREMIUM',
+  meta: 'Cycle extension within Premium tier · saves ₹398/3M or ₹3,789/year vs monthly',
+  spec: {
+    width: 1500, height: 200,
+    bars: [
+      { x: 260, y: 70, w: 720, h: 5, color:'premium',
+        top:'Premium 1M',
+        script:'Valid till same date, next month',
+        scriptX: 520,
+        mandate:'Create Mandate: Rs.499',
+        date:'march 1',
+        tip:'Original Premium 1M plan' },
+      { x: 980, y: 150, w: 460, h: 4, color:'premium-3m', doubleColor:'premium-12m',
+        top:'Premium 3M/1Y',
+        mandate:'Create Mandate: Rs.1,099/Rs. 2,199 (excluding mobile leftover days compensation)',
+        tip:'Premium 3M or 1Y plan\nSKU: HotstarPremium.IN.3Month.1099 / HotstarPremium.IN.Year.2199' }
+    ],
+    markers: [
+      { x: 980, label:'User Upgrades\nto 3M, 1Y', sub:'march 23', fromY: 20, toY: 170, tip:'Cycle-upgrade trigger' }
+    ],
+    dots: [
+      { x: 940, y: 158, color:'blue', lines:['Upgrade on','My Space'], side:'left',
+        tip:'Surface: My Space → Subscription → Change Plan' }
+    ],
+    curves: [
+      { fromX: 980, fromY: 75, toX: 1040, toY: 150, label:'X remaining days/\n31 of the amount adjusted',
+        tip:'Proration formula' }
+    ]
+  }
+};
+
+const D2C_PLANS = {
+  mobile: { color:'mobile', name:'Mobile', flows: [['A',MOBILE_A],['B',MOBILE_B],['C',MOBILE_C],['D',MOBILE_D]] },
+  super:  { color:'super',  name:'Super',  flows: [['A',SUPER_A],['B',SUPER_B],['C',SUPER_C]] },
+  premium:{ color:'premium',name:'Premium',flows: [['A',PREMIUM_A],['B',PREMIUM_B]] }
+};
+
+</script>
+
+<script>
+/* ═════════════════════════════════════════════ B2B FLOW DATA ═════════════════════════════════════════════ */
+
+/* ╔═══════════════════════ JIO PREPAID (full, matches Figma exactly) ═══════════════════════╗ */
+const JIO_PREPAID_PJ = {
+  width: 1700, height: 230,
+  bars: [
+    { x: 280, y: 90, w: 480, h: 5, color:'jio',
+      top:'Jio Prepaid Base',
+      script:'28 day cycle gets created',
+      scriptX: 460,
+      mandate:'',
+      tip:'Jio Prepaid Base Plan\nSKU: Jio.IN.JHSMobile.IPL.Monthly\n153.4M subscribers · B2B ref ₹79\n28-day cycle · JHS Mobile entitlement bundled' },
+    // A line - cyan after expiry going right
+    { x: 870, y: 70, w: 360, h: 5, color:'d2c-up',
+      script:'28 days valid', scriptX: 1010, tip:'D2C Mobile pack purchased after Jio plan expiry\nMandate: Rs.79/month created' },
+    // B line - purple Jio Top-up after expiry  
+    { x: 920, y: 110, w: 270, h: 5, color:'jio',
+      tip:'Jio Top-up Rs.100\n28-day continuation\nDifferent Partner Name (JIO vs JIOIPL) → creates 2nd parallel sub' },
+    // D line - red plan expires
+    { x: 870, y: 175, w: 700, h: 5, color:'expiry',
+      tip:'Plan expires fully\nNo new recharge · Entitlement removed\nLogin credentials remain' }
+  ],
+  markers: [
+    { x: 760, label:'Expiry', sub:'', fromY: 30, toY: 200, tip:'Jio Prepaid base 28-day cycle expires\nUser at decision point' }
+  ],
+  dots: [
+    { x: 280, y: 92, color:'blue', lines:[], tip:'Activation point · Jio ₹349 recharge\nBundled OTT signal sent to JHS' },
+    { x: 870, y: 70, color:'blue', lines:['A'], side:'left', tip:'Path A: User switches to D2C' },
+    { x: 870, y: 110, color:'orange', lines:['B'], side:'left', tip:'Path B: User buys top-up to replenish data' },
+    { x: 870, y: 140, color:'orange', lines:['C'], side:'left', tip:'Path C: User buys data plan again' },
+    { x: 870, y: 175, color:'red', lines:['D'], side:'left', tip:'Path D: Plan expires fully' }
+  ],
+  notes: [
+    { x: 260, y: 112, lines:['Buy for Rs. 349'], tip:'Initial Jio prepaid purchase · Rs.349 covers data + voice + JHS bundle for 28 days' },
+    { x: 920, y: 132, lines:['Buy for Rs. 100'], tip:'Jio Top-up plan · Rs.100 for 28-day data continuation' },
+    { x: 280, y: 152, lines:['If Jio plan is over:'], tip:'Decision branches at expiry' },
+    { x: 280, y: 169, lines:['A → Upgrade to Mobile D2C'], anchor:'start' },
+    { x: 280, y: 186, lines:['B → Top-up'] },
+    { x: 280, y: 203, lines:['C → Recharge Jio at Rs.349'] },
+    { x: 280, y: 220, lines:['D → Plan Expiry'] },
+    { x: 1240, y: 70, lines:['Upgrade to D2C'], anchor:'start' },
+    { x: 1240, y: 113, lines:['Plan expires'], anchor:'start' },
+    { x: 1580, y: 200, lines:['★ Plan expires but login','credentials remain'], anchor:'start', tip:'Important: JHS profile, watchlist, history are preserved\nUser can re-subscribe and resume seamlessly' }
+  ],
+  curves: [
+    { fromX: 1190, fromY: 110, toX: 1240, toY: 70, label:'' }
+  ]
+};
+
+const JIO_PREPAID_A = {
+  title:'USER SWITCHES TO D2C',
+  meta:'Jio prepaid lapses · user converts to direct D2C Mobile mandate · ₹79/month UPI AutoPay created',
+  spec: {
+    width: 1500, height: 250,
+    bars: [
+      { x: 260, y: 75, w: 480, h: 5, color:'jio',
+        top:'Jio Prepaid Base',
+        script:'28 days valid', scriptX: 470,
+        mandate:'Buy for Rs. 349',
+        tip:'Original Jio Prepaid Base · 28-day cycle' },
+      { x: 740, y: 75, w: 460, h: 5, color:'jio', dashed:true,
+        script:'Plan discontinued for remaining X days', scriptX: 770, tip:'After data pack expiry, Jio plan effectively pauses · JHS access removed by partner signal' },
+      { x: 740, y: 180, w: 700, h: 5, color:'d2c-up',
+        top:'User upgrades to Mobile D2C',
+        script:'Cycle created till same date of next month', scriptX: 980,
+        mandate:'Mandate for Rs. 79 a month created',
+        tip:'D2C Mobile Mandate Created\nSKU: JHSMobileLite.IN.Month.79\nMonthly UPI AutoPay · Calendar-month cycle' }
+    ],
+    markers: [
+      { x: 740, label:'Data Expiry', sub:'', fromY: 35, toY: 220, tip:'28-day Jio plan ends · JHS bundled access also ends' }
+    ],
+    notes: [
+      { x: 756, y: 112, lines:['Data Pack expires.'], tip:'Jio data ends' },
+      { x: 756, y: 126, lines:['User recharges data,'], tip:'User pays for data top-up but doesn\'t re-pick JHS bundle' },
+      { x: 756, y: 140, lines:['but D2C pack is now valid'], tip:'JHS access now comes from new D2C subscription, not Jio' }
+    ],
+    curves: [
+      { fromX: 760, fromY: 142, toX: 745, toY: 178, label:'' }
+    ]
+  }
+};
+
+const JIO_PREPAID_B = {
+  title:'USER BUYS TOP-UP TO REPLENISH DATA',
+  meta:'Jio data exhausts mid-cycle · user buys ₹100 top-up · Partner Name JIO (not JIOIPL) → creates 2nd parallel JHS subscription',
+  spec: {
+    width: 1500, height: 250,
+    bars: [
+      { x: 260, y: 75, w: 480, h: 5, color:'jio',
+        top:'Jio Prepaid Base',
+        script:'28 days valid', scriptX: 470,
+        mandate:'Buy for Rs. 349',
+        tip:'Original Jio plan · data pack runs out before 28 days' },
+      { x: 740, y: 75, w: 380, h: 5, color:'jio', dashed:true,
+        script:'Plan discontinued for remaining X days', scriptX: 770,
+        tip:'Data exhausted · effective pause · user prompted to recharge or top-up' },
+      { x: 740, y: 180, w: 400, h: 5, color:'jio',
+        top:'Jio Top-up',
+        script:'28 days valid', scriptX: 900,
+        mandate:'Buy for Rs. 100',
+        tip:'Jio Top-up Pack\nSKU: Jio.IN.JHSMobile.Monthly\n1.3M subs · Partner Name: JIO (different from JIOIPL)\nCreates 2nd parallel JHS subscription' }
+    ],
+    markers: [
+      { x: 740, label:'Data Expiry', sub:'', fromY: 35, toY: 220, tip:'Data pack expiry mid-cycle' },
+      { x: 1140, label:'Data Expiry', sub:'', fromY: 160, toY: 220, tip:'Top-up data also expires after 28 days' }
+    ],
+    notes: [
+      { x: 756, y: 112, lines:['Data Pack expires,'], tip:'Data exhausted' },
+      { x: 756, y: 126, lines:['user recharges data'] },
+      { x: 1158, y: 112, lines:['X days left out of 28'], tip:'Top-up provides 28 more days, but Jio Base bundle still has remaining unused days' },
+      { x: 1158, y: 206, lines:['Data Pack expires,'], tip:'Top-up data expires too' },
+      { x: 1158, y: 220, lines:['Jiohotstar remains'], tip:'JHS Mobile entitlement may persist if base mandate is still active' }
+    ]
+  }
+};
+
+const JIO_PREPAID_C = {
+  title:'USER BUYS DATA PLAN AGAIN',
+  meta:'User repeats full Rs.349 Jio Prepaid Base purchase · refreshes both data and JHS bundle',
+  spec: {
+    width: 1500, height: 250,
+    bars: [
+      { x: 260, y: 75, w: 480, h: 5, color:'jio',
+        top:'Jio Prepaid Base',
+        script:'28 days valid', scriptX: 470,
+        mandate:'Buy for Rs. 349',
+        tip:'First Jio Base purchase' },
+      { x: 740, y: 75, w: 380, h: 5, color:'jio', dashed:true,
+        script:'Plan discontinued for remaining X days', scriptX: 770,
+        tip:'Data pack expires · service pause' },
+      { x: 740, y: 180, w: 400, h: 5, color:'jio',
+        top:'Jio Prepaid Base',
+        script:'28 days valid', scriptX: 900,
+        mandate:'Buy for Rs. 349',
+        tip:'New Jio Base purchase · same SKU, same Partner Name JIOIPL\nExtends existing entitlement, doesn\'t create parallel sub' }
+    ],
+    markers: [
+      { x: 740, label:'Data Expiry', sub:'', fromY: 35, toY: 220, tip:'First-cycle data expiry' },
+      { x: 1140, label:'Data Expiry', sub:'', fromY: 160, toY: 220, tip:'Second-cycle data expiry' }
+    ],
+    notes: [
+      { x: 756, y: 112, lines:['Data Pack expires,'] },
+      { x: 756, y: 126, lines:['user recharges data'] },
+      { x: 1158, y: 112, lines:['X days left out of 28'], tip:'Second cycle started, additional 28 days running' },
+      { x: 1158, y: 206, lines:['Data Pack expires,'] },
+      { x: 1158, y: 220, lines:['Jiohotstar remains'] }
+    ]
+  }
+};
+
+const JIO_PREPAID_D = {
+  title:'USER CONTINUES PLAN AFTER DATA EXPIRY',
+  meta:'Data expires but Jio plan keeps JHS access active for remaining days · then plan fully expires with no winback',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 580, h: 5, color:'jio',
+        top:'Jio Prepaid Base',
+        script:'28 days valid', scriptX: 470,
+        mandate:'Buy for Rs. 349',
+        tip:'Jio Prepaid Base · 28-day full cycle' },
+      { x: 1100, y: 70, w: 380, h: 5, color:'expiry',
+        tip:'Final lapse · JHS entitlement removed\nPost-expiry config: BLANK · No winback offer\nLogin credentials retained for re-subscription' }
+    ],
+    markers: [
+      { x: 840, label:'Data Expiry', sub:'', fromY: 30, toY: 145, tip:'Data pack expires mid-cycle' },
+      { x: 1100, label:'Plan Expiry', sub:'', fromY: 30, toY: 145, tip:'Full 28-day Jio plan expires · entitlement removed' }
+    ],
+    notes: [
+      { x: 860, y: 92, lines:['X days left out of 28'], tip:'Data ran out but JHS bundle still valid until 28-day plan expiry' },
+      { x: 860, y: 110, lines:['Data Pack expires,'] },
+      { x: 860, y: 122, lines:['Jiohotstar remains'] },
+      { x: 1120, y: 92, lines:['Plan expires'], tip:'Hard expiry · entitlement removed' }
+    ]
+  }
+};
+
+/* ╔═══════════════════════ JIO POSTPAID ═══════════════════════╗ */
+const JIO_POSTPAID_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1000, h: 5, color:'jio',
+      top:'Jio Postpaid (₹449+)',
+      script:'Calendar-month bill cycle', scriptX: 460,
+      mandate:'Auto-bundle · No JHS picker', date:'march 1',
+      tip:'Jio Postpaid Plan\nPrice: ₹449+ per month (varies by plan)\nJHS Mobile bundled · Auto-renews with bill\nSKU not in B2B migration sheet (TBC)' }
+  ],
+  markers: [
+    { x: 1280, label:'Bill cycle\nend', sub:'march 31', fromY: 30, toY: 170, tip:'Calendar-month end · bill generated · entitlement auto-renews' }
+  ],
+  dots: [
+    { x: 280, y: 82, color:'blue', lines:[], tip:'Postpaid activation · JHS bundle automatically attached' }
+  ],
+  notes: [
+    { x: 290, y: 110, lines:['Calendar-month billing'] }
+  ]
+};
+
+const JIO_POSTPAID_A = {
+  title:'USER PAYS BILL → CONTINUES',
+  meta:'Default postpaid renewal · monthly bill paid · JHS entitlement auto-renews',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio',
+        top:'Jio Postpaid', script:'Bill cycle 1', scriptX: 420, mandate:'march 1',
+        tip:'First bill cycle' },
+      { x: 760, y: 70, w: 600, h: 5, color:'jio',
+        top:'Jio Postpaid', script:'Bill cycle 2', scriptX: 920, mandate:'april 1',
+        tip:'Bill paid · seamless continuation' }
+    ],
+    markers: [
+      { x: 760, label:'Bill paid', sub:'apr 1', fromY: 30, toY: 130, tip:'Calendar-month bill paid · JHS bundle continues' }
+    ]
+  }
+};
+
+const JIO_POSTPAID_B = {
+  title:'USER CANCELS JIO POSTPAID',
+  meta:'Account closure or downgrade · JHS bundle removed at next bill cycle',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio',
+        top:'Jio Postpaid', mandate:'march 1' },
+      { x: 760, y: 70, w: 600, h: 5, color:'expiry',
+        top:'Bundle removed', mandate:'JHS entitlement ends with account closure',
+        tip:'Post-cancellation · Bundle access stops at bill cycle end\nNo separate JHS cancel path required' }
+    ],
+    markers: [
+      { x: 760, label:'Cancel Jio\npostpaid', sub:'march 25', fromY: 30, toY: 130, tip:'User initiates cancellation via Jio app or store' }
+    ],
+    dots: [
+      { x: 720, y: 110, color:'red', lines:['Cancel via','Jio app'], side:'left', tip:'Surface: MyJio → Plan → Deactivate' }
+    ]
+  }
+};
+
+/* ╔═══════════════════════ JIOFIBER FTTH ═══════════════════════╗ */
+const JIO_FIBER_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super',
+      top:'JioFiber Super',
+      script:'STB auto-login · No pre-expiry push', scriptX: 530,
+      mandate:'Bundle signal tied to broadband bill',
+      tip:'JioFiber FTTH Bundle\nSKU: Jio.IN.Bundle.Monthly.FTTH\n9.7M subscribers · Super tier · Excluded from migration\nSet-Top Box auto-authenticates on first boot' }
+  ],
+  markers: [
+    { x: 1380, label:'Monthly\nbill', sub:'', fromY: 30, toY: 170, tip:'Broadband bill cycle · JHS Super bundle continues' }
+  ],
+  dots: [
+    { x: 280, y: 82, color:'blue', lines:[], tip:'JioFiber install · STB activates → JHS Super entitlement created' }
+  ]
+};
+
+const JIO_FIBER_A = {
+  title:'USER PAYS BROADBAND BILL → CONTINUES',
+  meta:'Default flow · monthly broadband bill paid · JHS Super entitlement persists indefinitely',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 1200, h: 5, color:'super',
+        top:'JioFiber Super',
+        script:'Continuous · paid via broadband bill', scriptX: 600,
+        mandate:'STB auto-login persists',
+        tip:'No JHS-specific touchpoint · Bundle remains active as long as broadband service is paid' }
+    ]
+  }
+};
+
+const JIO_FIBER_B = {
+  title:'USER CANCELS JIOFIBER',
+  meta:'Broadband service cancellation · STB deactivated · JHS Super entitlement removed',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super', top:'JioFiber Super' },
+      { x: 760, y: 70, w: 600, h: 5, color:'expiry',
+        top:'STB deactivated',
+        mandate:'JHS access ends with broadband service',
+        tip:'STB stops authenticating · Bundle entitlement removed\nProfiles & watchlist preserved' }
+    ],
+    markers: [
+      { x: 760, label:'Cancel\nbroadband', sub:'', fromY: 30, toY: 130, tip:'User cancels JioFiber service' }
+    ],
+    dots: [
+      { x: 720, y: 110, color:'red', lines:['Cancel via','MyJio / store'], side:'left' }
+    ]
+  }
+};
+
+/* ╔═══════════════════════ JIO HOLLYWOOD ADD-ON ═══════════════════════╗ */
+const JIO_HW_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'hollywood',
+      top:'HotstarMobile (Jio Hollywood)',
+      script:'Base Mobile terminated + new ₹128 mandate', scriptX: 580,
+      mandate:'₹79 base + ₹49 Hollywood = ₹128 total',
+      tip:'Jio Hollywood Add-On\nSKU: Jio.IN.Mobile.IPL.Monthly · Status: TBD\nJIRA: PREM-31773\nTerminates base Jio mandate, creates new HotstarMobile entitlement' }
+  ],
+  dots: [
+    { x: 280, y: 82, color:'orange', lines:[], tip:'Add-on activation · User opts in from Mobile via Hollywood Blocker' }
+  ]
+};
+
+const JIO_HW_A = {
+  title:'BOTH AUTO-RENEW (₹128 total)',
+  meta:'Combined HotstarMobile renewal · base + Hollywood mandates both fire',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 1180, h: 5, color:'hollywood',
+        top:'HotstarMobile', script:'Valid till same date, next month', scriptX: 580,
+        mandate:'Create Mandate: Rs.128',
+        tip:'Combined Mobile + Hollywood entitlement renews monthly' }
+    ],
+    markers: [
+      { x: 1100, label:'Mandate\nReminder', sub:'march 28', fromY: 20, toY: 130 },
+      { x: 1200, label:'Money\nDeducted', sub:'apr 1', fromY: 20, toY: 130 }
+    ]
+  }
+};
+
+const JIO_HW_B = {
+  title:'USER DROPS HOLLYWOOD ADD-ON',
+  meta:'Reverts to base Mobile · ₹49 mandate cancelled · ₹79 Mobile continues',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'hollywood',
+        top:'HotstarMobile (combined)' },
+      { x: 760, y: 70, w: 700, h: 5, color:'mobile',
+        top:'Mobile (base only)',
+        mandate:'Rs.79 · Hollywood add-on removed',
+        tip:'Hollywood mandate cancelled · base Mobile mandate continues unchanged' }
+    ],
+    markers: [
+      { x: 760, label:'Drop add-on', sub:'', fromY: 30, toY: 145, tip:'User cancels Hollywood add-on only' }
+    ],
+    dots: [
+      { x: 720, y: 110, color:'red', lines:['Drop via','My Space'], side:'left' }
+    ]
+  }
+};
+
+/* ╔═══════════════════════ VI PREPAID 28d ═══════════════════════╗ */
+const VI_28D_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Vi Prepaid 28d',
+      script:'Active OTT picker selection', scriptX: 520,
+      mandate:'OTT pick during recharge · 28-day entitlement',
+      tip:'Vi Prepaid 28d Plan\nSKU: VI.IN.JHSMobile.28days\n1.4M subscribers · B2B ref ₹79\nJIRA: PREM-30969 · Active Type-B picker' }
+  ],
+  markers: [
+    { x: 1380, label:'28-day\nexpiry', sub:'', fromY: 30, toY: 170, tip:'User must re-recharge + re-pick JHS to continue' }
+  ],
+  dots: [
+    { x: 280, y: 82, color:'blue', lines:[], tip:'Vi recharge + OTT picker selection of JHS' }
+  ]
+};
+const VI_28D_A = {
+  title:'USER RECHARGES + PICKS JHS AGAIN',
+  meta:'Vi prepaid recharge with explicit OTT picker selection · 28d cycle restarts',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi Prepaid 28d', mandate:'cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'jio', top:'Vi Prepaid 28d', mandate:'cycle 2',
+        tip:'Continuation cycle · New 28-day entitlement created' }
+    ],
+    markers: [
+      { x: 760, label:'Recharge\n+ pick', sub:'day 29', fromY: 30, toY: 130, tip:'User re-recharges and re-selects JHS in OTT picker' }
+    ]
+  }
+};
+const VI_28D_B = {
+  title:'USER SWITCHES TO D2C',
+  meta:'After Vi cycle, user opts for D2C Mobile mandate · seamless continuation',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi Prepaid 28d', mandate:'expires' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up',
+        top:'D2C Mobile Monthly',
+        script:'Mandate created · ₹79/month', scriptX: 940,
+        mandate:'JHSMobileLite.IN.Month.79',
+        tip:'B2B → D2C conversion · UPI AutoPay mandate' }
+    ],
+    markers: [
+      { x: 760, label:'Convert\nto D2C', sub:'', fromY: 30, toY: 145 }
+    ],
+    dots: [
+      { x: 720, y: 110, color:'blue', lines:['Pre-expiry','push notif'], side:'left', tip:'D-3 push: "Your Vi JHS pack expires soon. Switch to ₹79/mo D2C"' }
+    ]
+  }
+};
+const VI_28D_C = {
+  title:'USER DOES NOT RECHARGE / SKIPS PICKER',
+  meta:'Cycle expires · entitlement removed · no winback (post-expiry BLANK)',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi Prepaid 28d' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Entitlement removed · No winback config' }
+    ],
+    markers: [
+      { x: 760, label:'28-day\nexpiry', sub:'', fromY: 30, toY: 130 }
+    ]
+  }
+};
+
+/* ╔═══════════════════════ VI PREPAID 84d ═══════════════════════╗ */
+const VI_84D_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Vi Prepaid 84d',
+      script:'Quarterly recharge with OTT pick', scriptX: 540,
+      mandate:'Plan ID: Vi_Pre_HotstarVIP89D · ₹149 ref',
+      tip:'Vi Prepaid 84d\nSKU: VI.IN.JHSMobile.84days · 0.6M subs\nJIRA: PREM-30970 · 84-day entitlement' }
+  ],
+  markers: [{ x: 1380, label:'84-day\nexpiry', fromY: 30, toY: 170 }]
+};
+const VI_84D_A = {
+  title:'USER RECHARGES QUARTERLY AGAIN',
+  meta:'Vi 84d recharge with OTT picker · cycle restarts',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi 84d cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'jio', top:'Vi 84d cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'day 85', fromY: 30, toY: 130 }]
+  }
+};
+const VI_84D_B = {
+  title:'USER SWITCHES TO D2C 3M',
+  meta:'Quarterly D2C conversion · ₹149/3M direct mandate',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi Prepaid 84d' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile 3M',
+        mandate:'Create Mandate: Rs.149/3M · JHSMobileLite.IN.3Month.149' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C 3M', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ VI YEARLY PREPAID ═══════════════════════╗ */
+const VI_YPRE_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'mobile-12m',
+      top:'Vi Yearly Prepaid',
+      script:'12-month prepaid cycle', scriptX: 540,
+      mandate:'Plan ID: Vi_Pre_HotstarVIP1Y · ₹499 ref',
+      tip:'Vi Yearly Prepaid\nSKU: VI.IN.JHSMobile.Yearly.Prepaid\n0.4M subs · JIRA: PREM-30893' }
+  ],
+  markers: [{ x: 1380, label:'12M\nexpiry', fromY: 30, toY: 170 }]
+};
+const VI_YPRE_A = {
+  title:'USER RECHARGES YEARLY AGAIN',
+  meta:'Vi yearly recharge with OTT picker · 12M cycle restarts',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Vi Yearly cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'mobile-12m', top:'Vi Yearly cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'365d', fromY: 30, toY: 130 }]
+  }
+};
+const VI_YPRE_B = {
+  title:'USER SWITCHES TO D2C YEARLY',
+  meta:'Annual D2C conversion · ₹499/year direct mandate',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Vi Yearly Prepaid' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile Yearly',
+        mandate:'Create Mandate: Rs.499/year · JHSMobileLite.IN.Year.499' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C Year', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ VI MONTHLY POSTPAID ═══════════════════════╗ */
+const VI_MPOST_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Vi Monthly Postpaid',
+      script:'Bill-cycle linked · monthly auto-renew', scriptX: 580,
+      mandate:'Plan ID: JIOHOTSTARVIP1MP',
+      tip:'Vi Monthly Postpaid · 269 + TNB subs\nJIRA: PREM-31004' }
+  ],
+  markers: [{ x: 1380, label:'Bill cycle\nend', fromY: 30, toY: 170 }]
+};
+const VI_MPOST_A = {
+  title:'USER PAYS BILL → CONTINUES',
+  meta:'Standard postpaid renewal · monthly bill auto-pays · JHS continues',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 1200, h: 5, color:'jio',
+        top:'Vi Monthly Postpaid',
+        script:'Continues with bill cycle', scriptX: 580,
+        mandate:'Renews monthly with Vi bill' }
+    ]
+  }
+};
+const VI_MPOST_B = {
+  title:'USER REMOVES JHS FROM OTT MENU',
+  meta:'Bundle removed at next bill cycle · Vi account remains active without JHS',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Vi Monthly Postpaid' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'JHS removed at next bill cycle' }
+    ],
+    markers: [{ x: 760, label:'Remove from\nOTT menu', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Vi app →','OTT menu'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ VI YEARLY POSTPAID ═══════════════════════╗ */
+const VI_YPOST_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'mobile-12m',
+      top:'Vi Yearly Postpaid Mobile',
+      script:'12M bill-linked · auto-renew', scriptX: 580,
+      mandate:'Plan ID: Vi_Post_HotstarVIP1Y',
+      tip:'Vi Yearly Postpaid Mobile\n0.9M subs · JIRA: PREM-30891\nLargest Vi postpaid Mobile segment' }
+  ],
+  markers: [{ x: 1380, label:'12M bill\ncycle end', fromY: 30, toY: 170 }]
+};
+const VI_YPOST_A = {
+  title:'USER PAYS BILL → CONTINUES',
+  meta:'Yearly bundle continues with bill · no user action needed',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'mobile-12m', top:'Vi Yearly Postpaid', script:'12M auto-renews with bill', scriptX: 580 }]
+  }
+};
+const VI_YPOST_B = {
+  title:'USER CANCELS VI POSTPAID',
+  meta:'Account closure or downgrade · bundle removed at next bill',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Vi Yearly Postpaid' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Bundle removed · entitlement ends' }
+    ],
+    markers: [{ x: 760, label:'Cancel Vi\npostpaid', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Vi customer','service / store'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ VI SUPER MONTHLY ═══════════════════════╗ */
+const VI_SUPER_M_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super',
+      top:'Vi Super Monthly',
+      script:'Postpaid Super tier · 1080p, Hollywood', scriptX: 580,
+      mandate:'Plan ID: JioHotstarSUPER1MP · ₹149 ref',
+      tip:'Vi Super Monthly Postpaid\n8,295 subs · JIRA: PREM-30894\nOnly partner surface showing explicit tier choice' }
+  ],
+  markers: [{ x: 1380, label:'Bill cycle\nend', fromY: 30, toY: 170 }]
+};
+const VI_SUPER_M_A = {
+  title:'USER PAYS BILL → SUPER CONTINUES',
+  meta:'Monthly bill renews Super entitlement automatically',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super', top:'Vi Super Monthly', script:'Renews with bill', scriptX: 580 }]
+  }
+};
+const VI_SUPER_M_B = {
+  title:'USER UPGRADES TO PREMIUM D2C',
+  meta:'B2B Super → D2C Premium conversion via pre-expiry push',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super', top:'Vi Super Monthly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'premium', top:'D2C Premium', mandate:'Create Mandate: Rs.499/month' }
+    ],
+    markers: [{ x: 760, label:'Upgrade to\nPremium D2C', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C upgrade push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ VI SUPER YEARLY POSTPAID ═══════════════════════╗ */
+const VI_SUPER_Y_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super-12m',
+      top:'Vi Super Yearly Postpaid',
+      script:'12M Super tier · postpaid auto-renew', scriptX: 580,
+      mandate:'Post_Hotstar_Super1Y · ₹1,099 ref',
+      tip:'Vi Super Yearly Postpaid\n23,401 subs · JIRA: PREM-30967\nLargest intentional Super segment' }
+  ],
+  markers: [{ x: 1380, label:'12M bill\ncycle end', fromY: 30, toY: 170 }]
+};
+const VI_SUPER_Y_A = {
+  title:'USER PAYS BILL → SUPER CONTINUES',
+  meta:'12M Super entitlement auto-renews with Vi yearly bill',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super-12m', top:'Vi Super Yearly', script:'12M auto-renews', scriptX: 580 }]
+  }
+};
+const VI_SUPER_Y_B = {
+  title:'USER REMOVES SUPER FROM MENU / CANCELS VI',
+  meta:'Super entitlement removed at next bill cycle',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super-12m', top:'Vi Super Yearly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Super entitlement removed at bill cycle' }
+    ],
+    markers: [{ x: 760, label:'Remove Super\nfrom OTT menu', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Vi app','menu'], side:'left' }]
+  }
+};
+
+</script>
+
+<script>
+/* ╔═══════════════════════ AIRTEL PREPAID 28d ═══════════════════════╗ */
+const AT_28D_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Airtel Prepaid 28d',
+      script:'OTT picker selection at recharge', scriptX: 540,
+      mandate:'Plan ID: HOTSTAR_28 · ₹79 ref',
+      tip:'Airtel Prepaid 28d\nSKU: AIRTEL.IN.JHSMobile.28days\n9.3M subscribers · JIRA: PREM-30748\nLargest single Airtel B2B segment' }
+  ],
+  markers: [{ x: 1380, label:'28-day\nexpiry', fromY: 30, toY: 170 }]
+};
+const AT_28D_A = {
+  title:'USER RECHARGES + PICKS JHS AGAIN',
+  meta:'Standard 28d renewal · OTT picker confirms JHS selection',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Airtel 28d cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'jio', top:'Airtel 28d cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'day 29', fromY: 30, toY: 130 }]
+  }
+};
+const AT_28D_B = {
+  title:'USER SWITCHES TO D2C',
+  meta:'Pre-expiry conversion · ₹79/month D2C mandate created',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Airtel 28d' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile Monthly',
+        mandate:'Create Mandate: Rs.79/month · JHSMobileLite.IN.Month.79' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+const AT_28D_C = {
+  title:'USER DOES NOT RECHARGE',
+  meta:'Cycle expires · post-expiry BLANK config · no winback',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Airtel 28d' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Entitlement removed · profile retained' }
+    ],
+    markers: [{ x: 760, label:'28-day\nexpiry', fromY: 30, toY: 130 }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL PREPAID MONTHLY (30d) ═══════════════════════╗ */
+const AT_M_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Airtel Prepaid Monthly',
+      script:'30-day calendar cycle', scriptX: 540,
+      mandate:'Plan ID: HOTSTAR_MOBILE_M · ₹79 ref',
+      tip:'Airtel Prepaid Monthly\nSKU: AIRTEL.IN.JHSMobile.Monthly\n3.2M subs · JIRA: PREM-30749' }
+  ],
+  markers: [{ x: 1380, label:'30-day\nexpiry', fromY: 30, toY: 170 }]
+};
+const AT_M_A = {
+  title:'USER RECHARGES + PICKS JHS AGAIN',
+  meta:'Monthly renewal · OTT picker confirms · new 30-day entitlement',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Airtel Monthly cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'jio', top:'Airtel Monthly cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'day 31', fromY: 30, toY: 130 }]
+  }
+};
+const AT_M_B = {
+  title:'USER SWITCHES TO D2C',
+  meta:'D2C conversion to ₹79/month mandate',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'Airtel Monthly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile Monthly', mandate:'Create Mandate: Rs.79/month' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL PREPAID QUARTERLY ═══════════════════════╗ */
+const AT_Q_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'Airtel Prepaid Quarterly (3M)',
+      script:'90-day prepaid cycle', scriptX: 540,
+      mandate:'Plan ID: HOTSTAR_3M · ₹149 ref',
+      tip:'Airtel Prepaid Quarterly\nSKU: AIRTEL.IN.JHSMobile.3Month\n1.8M subs · JIRA: PREM-30750' }
+  ],
+  markers: [{ x: 1380, label:'90-day\nexpiry', fromY: 30, toY: 170 }]
+};
+const AT_Q_A = {
+  title:'USER RECHARGES QUARTERLY AGAIN',
+  meta:'Quarterly cycle restarts with OTT picker',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-3m', top:'Airtel 3M cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'mobile-3m', top:'Airtel 3M cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'day 91', fromY: 30, toY: 130 }]
+  }
+};
+const AT_Q_B = {
+  title:'USER SWITCHES TO D2C 3M',
+  meta:'Conversion to D2C 3M mandate · ₹149 prorated',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-3m', top:'Airtel Quarterly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile 3M', mandate:'Create Mandate: Rs.149/3M' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C 3M', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL YEARLY PREPAID ═══════════════════════╗ */
+const AT_YPRE_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'mobile-12m',
+      top:'Airtel Yearly Prepaid',
+      script:'12-month prepaid cycle', scriptX: 540,
+      mandate:'Plan ID: HOTSTAR_1Y · ₹299 ref',
+      tip:'Airtel Yearly Prepaid\nSKU: AIRTEL.IN.JHSMobile.Yearly\n0.7M subs · JIRA: PREM-30751' }
+  ],
+  markers: [{ x: 1380, label:'12M\nexpiry', fromY: 30, toY: 170 }]
+};
+const AT_YPRE_A = {
+  title:'USER RECHARGES YEARLY AGAIN',
+  meta:'12-month cycle restarts with OTT picker',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Airtel Yearly cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'mobile-12m', top:'Airtel Yearly cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\n+ pick', sub:'365d', fromY: 30, toY: 130 }]
+  }
+};
+const AT_YPRE_B = {
+  title:'USER SWITCHES TO D2C YEARLY',
+  meta:'Conversion to D2C Mobile Year · ₹299 (Mobile) or ₹499 (Mobile+1y) mandate',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Airtel Yearly Prepaid' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile Yearly', mandate:'Create Mandate: Rs.299/year' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C Year', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL YEARLY POSTPAID MOBILE ═══════════════════════╗ */
+const AT_YPOST_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'mobile-12m',
+      top:'Airtel Yearly Postpaid Mobile',
+      script:'12M postpaid · bill-cycle linked', scriptX: 580,
+      mandate:'Plan ID: HOTSTAR_M_PB · ₹299 ref',
+      tip:'Airtel Yearly Postpaid Mobile\nSKU: AIRTEL.IN.JHSMobile.Yearly.Postpaid\n0.5M subs · JIRA: PREM-30752' }
+  ],
+  markers: [{ x: 1380, label:'12M bill\ncycle end', fromY: 30, toY: 170 }]
+};
+const AT_YPOST_A = {
+  title:'USER PAYS BILL → CONTINUES',
+  meta:'Annual postpaid bill paid · JHS Mobile bundle auto-renews',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'mobile-12m', top:'Airtel Yearly Postpaid', script:'12M auto-renews with bill', scriptX: 580 }]
+  }
+};
+const AT_YPOST_B = {
+  title:'USER CANCELS AIRTEL POSTPAID',
+  meta:'Bundle ends at next bill cycle',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'mobile-12m', top:'Airtel Yearly Postpaid' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'JHS bundle removed' }
+    ],
+    markers: [{ x: 760, label:'Cancel Airtel\npostpaid', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Airtel Thanks','app / store'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL SUPER MONTHLY (postpaid) ═══════════════════════╗ */
+const AT_SUPER_M_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super',
+      top:'Airtel Super Monthly',
+      script:'Postpaid Super tier · 1080p, Hollywood', scriptX: 580,
+      mandate:'Plan ID: HOTSTAR_SUPER_M · ₹149 ref',
+      tip:'Airtel Super Monthly Postpaid\n11,238 subs · JIRA: PREM-30753\nMonthly bill renews Super tier' }
+  ],
+  markers: [{ x: 1380, label:'Bill cycle\nend', fromY: 30, toY: 170 }]
+};
+const AT_SUPER_M_A = {
+  title:'USER PAYS BILL → SUPER CONTINUES',
+  meta:'Monthly Super auto-renews with Airtel bill',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super', top:'Airtel Super Monthly', script:'Renews with bill', scriptX: 580 }]
+  }
+};
+const AT_SUPER_M_B = {
+  title:'USER UPGRADES TO PREMIUM D2C',
+  meta:'B2B Super → D2C Premium conversion',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super', top:'Airtel Super Monthly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'premium', top:'D2C Premium', mandate:'Create Mandate: Rs.499/month' }
+    ],
+    markers: [{ x: 760, label:'Upgrade to\nPremium D2C', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C upgrade push'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL SUPER QUARTERLY (postpaid) ═══════════════════════╗ */
+const AT_SUPER_Q_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super-3m',
+      top:'Airtel Super Quarterly',
+      script:'3-month postpaid Super tier', scriptX: 580,
+      mandate:'Plan ID: HOTSTAR_SUPER_3M · ₹349 ref',
+      tip:'Airtel Super Quarterly Postpaid\n7,142 subs · JIRA: PREM-30754' }
+  ],
+  markers: [{ x: 1380, label:'Bill cycle\nend', fromY: 30, toY: 170 }]
+};
+const AT_SUPER_Q_A = {
+  title:'USER PAYS QUARTERLY BILL → CONTINUES',
+  meta:'Super tier renews with quarterly Airtel bill',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super-3m', top:'Airtel Super Quarterly', script:'3M auto-renews', scriptX: 580 }]
+  }
+};
+const AT_SUPER_Q_B = {
+  title:'USER REMOVES SUPER FROM OTT MENU',
+  meta:'Super entitlement removed at next quarterly bill',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super-3m', top:'Airtel Super Quarterly' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Super entitlement removed' }
+    ],
+    markers: [{ x: 760, label:'Remove Super\nfrom menu', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Airtel Thanks','app'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL DTH YEARLY SUPER ═══════════════════════╗ */
+const AT_DTH_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super-12m',
+      top:'Airtel DTH Yearly Super',
+      script:'Set-Top Box auto-login · 12M bundle', scriptX: 580,
+      mandate:'Plan ID: HOTSTAR_DTH_1Y · ₹699 ref',
+      tip:'Airtel DTH Yearly Super\nSKU: AIRTEL.IN.DTH.Super.Yearly\n1.1M subs · JIRA: PREM-30755' }
+  ],
+  markers: [{ x: 1380, label:'12M DTH\nbill cycle', fromY: 30, toY: 170 }]
+};
+const AT_DTH_A = {
+  title:'USER PAYS DTH SUBSCRIPTION → CONTINUES',
+  meta:'Annual DTH bundle continues · STB persists',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super-12m', top:'Airtel DTH Super 12M', script:'STB-authenticated · 12M', scriptX: 580 }]
+  }
+};
+const AT_DTH_B = {
+  title:'USER CANCELS / DOWNGRADES DTH',
+  meta:'STB deactivated · Super bundle removed',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super-12m', top:'Airtel DTH Super' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Super entitlement ends with DTH bundle' }
+    ],
+    markers: [{ x: 760, label:'Cancel\nDTH', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Airtel DTH','customer care'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ AIRTEL BROADBAND SUPER ═══════════════════════╗ */
+const AT_BB_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'super-12m',
+      top:'Airtel Broadband Super',
+      script:'Xstream Box · Super bundle', scriptX: 580,
+      mandate:'Plan ID: HOTSTAR_BB · ₹999+ ref',
+      tip:'Airtel Broadband Super\nSKU: AIRTEL.IN.Broadband.Super.Monthly\n0.4M subs · JIRA: PREM-30756' }
+  ],
+  markers: [{ x: 1380, label:'Bill cycle\nend', fromY: 30, toY: 170 }]
+};
+const AT_BB_A = {
+  title:'USER PAYS BROADBAND BILL → SUPER CONTINUES',
+  meta:'Monthly broadband bill keeps Super bundle active',
+  spec: {
+    width: 1500, height: 160,
+    bars: [{ x: 260, y: 70, w: 1200, h: 5, color:'super', top:'Airtel Broadband Super', script:'Monthly auto-renew with bill', scriptX: 580 }]
+  }
+};
+const AT_BB_B = {
+  title:'USER CANCELS BROADBAND',
+  meta:'Service cancellation · Xstream Box deactivated · Super removed',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'super', top:'Airtel Broadband Super' },
+      { x: 760, y: 70, w: 700, h: 5, color:'expiry', mandate:'Super entitlement removed' }
+    ],
+    markers: [{ x: 760, label:'Cancel\nbroadband', fromY: 30, toY: 130 }],
+    dots: [{ x: 720, y: 110, color:'red', lines:['Airtel Thanks','/ store'], side:'left' }]
+  }
+};
+
+/* ╔═══════════════════════ BSNL ₹499 OTT PACK ═══════════════════════╗ */
+const BSNL_PJ = {
+  width: 1700, height: 200,
+  bars: [
+    { x: 280, y: 80, w: 1100, h: 5, color:'jio',
+      top:'BSNL ₹499 OTT Pack',
+      script:'Prepaid bundled OTT · validity varies', scriptX: 580,
+      mandate:'Plan ID: BSNL_HOTSTAR_499 · ₹79 ref',
+      tip:'BSNL OTT Pack\nSKU: BSNL.IN.JHSMobile.OTTPack\n0.05M subs · Low priority migration target' }
+  ],
+  markers: [{ x: 1380, label:'Plan\nexpiry', fromY: 30, toY: 170 }]
+};
+const BSNL_A = {
+  title:'USER RECHARGES BSNL OTT PACK',
+  meta:'Pack re-purchased · cycle restarts',
+  spec: {
+    width: 1500, height: 160,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'BSNL OTT cycle 1' },
+      { x: 760, y: 70, w: 700, h: 5, color:'jio', top:'BSNL OTT cycle 2' }
+    ],
+    markers: [{ x: 760, label:'Recharge\nOTT pack', fromY: 30, toY: 130 }]
+  }
+};
+const BSNL_B = {
+  title:'USER LAPSES / SWITCHES TO D2C',
+  meta:'No recharge · entitlement removed · D2C conversion option',
+  spec: {
+    width: 1500, height: 180,
+    bars: [
+      { x: 260, y: 70, w: 500, h: 5, color:'jio', top:'BSNL OTT Pack' },
+      { x: 760, y: 70, w: 700, h: 5, color:'d2c-up', top:'D2C Mobile Monthly', mandate:'Create Mandate: Rs.79/month' }
+    ],
+    markers: [{ x: 760, label:'Convert\nto D2C', fromY: 30, toY: 145 }],
+    dots: [{ x: 720, y: 110, color:'blue', lines:['Pre-expiry','D2C push'], side:'left' }]
+  }
+};
+
+</script>
+
+<script>
+/* ═════════════════════════════════════════════ B2B PARTNERS AGGREGATOR ═════════════════════════════════════════════ */
+const B2B_PARTNERS = {
+  'jio-prepaid': {
+    name:'Jio Prepaid', group:'jio', color:'jio',
+    sku:'Jio.IN.JHSMobile.IPL.Monthly', subs:'153.4M', refPrice:'₹79',
+    desc:'28-day Jio recharge with bundled JHS Mobile entitlement · Largest B2B segment',
+    purchaseJourney: JIO_PREPAID_PJ,
+    flows:[['A',JIO_PREPAID_A],['B',JIO_PREPAID_B],['C',JIO_PREPAID_C],['D',JIO_PREPAID_D]]
+  },
+  'jio-postpaid': {
+    name:'Jio Postpaid', group:'jio', color:'jio',
+    sku:'Jio.IN.JHSMobile.Postpaid', subs:'~14M', refPrice:'₹79',
+    desc:'Calendar-month postpaid · Auto-bundled JHS · No picker',
+    purchaseJourney: JIO_POSTPAID_PJ,
+    flows:[['A',JIO_POSTPAID_A],['B',JIO_POSTPAID_B]]
+  },
+  'jio-fiber': {
+    name:'JioFiber FTTH', group:'jio', color:'super',
+    sku:'Jio.IN.Bundle.Monthly.FTTH', subs:'9.7M', refPrice:'Super tier',
+    desc:'Broadband bundle · Super entitlement · STB auto-login · Excluded from migration',
+    purchaseJourney: JIO_FIBER_PJ,
+    flows:[['A',JIO_FIBER_A],['B',JIO_FIBER_B]]
+  },
+  'jio-hollywood': {
+    name:'Jio Hollywood Add-on', group:'jio', color:'hollywood',
+    sku:'Jio.IN.Mobile.IPL.Monthly (TBD)', subs:'TBD', refPrice:'₹128',
+    desc:'Hollywood add-on for Jio · Terminates base + creates HotstarMobile ₹128 mandate',
+    purchaseJourney: JIO_HW_PJ,
+    flows:[['A',JIO_HW_A],['B',JIO_HW_B]]
+  },
+  'vi-28d': {
+    name:'Vi Prepaid 28d', group:'vi', color:'jio',
+    sku:'VI.IN.JHSMobile.28days', subs:'1.4M', refPrice:'₹79',
+    desc:'28-day Vi recharge with OTT picker · Active Type-B SKU',
+    purchaseJourney: VI_28D_PJ,
+    flows:[['A',VI_28D_A],['B',VI_28D_B],['C',VI_28D_C]]
+  },
+  'vi-84d': {
+    name:'Vi Prepaid 84d', group:'vi', color:'jio',
+    sku:'VI.IN.JHSMobile.84days', subs:'0.6M', refPrice:'₹149',
+    desc:'Quarterly Vi prepaid · 84-day cycle',
+    purchaseJourney: VI_84D_PJ,
+    flows:[['A',VI_84D_A],['B',VI_84D_B]]
+  },
+  'vi-y-pre': {
+    name:'Vi Yearly Prepaid', group:'vi', color:'jio',
+    sku:'VI.IN.JHSMobile.Yearly.Prepaid', subs:'0.4M', refPrice:'₹499',
+    desc:'12-month Vi prepaid cycle',
+    purchaseJourney: VI_YPRE_PJ,
+    flows:[['A',VI_YPRE_A],['B',VI_YPRE_B]]
+  },
+  'vi-m-post': {
+    name:'Vi Monthly Postpaid', group:'vi', color:'jio',
+    sku:'VI.IN.JHSMobile.Monthly.Postpaid', subs:'~270K', refPrice:'₹79',
+    desc:'Bill-cycle linked Vi postpaid · monthly auto-renew',
+    purchaseJourney: VI_MPOST_PJ,
+    flows:[['A',VI_MPOST_A],['B',VI_MPOST_B]]
+  },
+  'vi-y-post': {
+    name:'Vi Yearly Postpaid', group:'vi', color:'jio',
+    sku:'VI.IN.JHSMobile.Yearly.Postpaid', subs:'0.9M', refPrice:'₹499',
+    desc:'Largest Vi postpaid Mobile segment',
+    purchaseJourney: VI_YPOST_PJ,
+    flows:[['A',VI_YPOST_A],['B',VI_YPOST_B]]
+  },
+  'vi-super-m': {
+    name:'Vi Super Monthly', group:'vi', color:'super',
+    sku:'VI.IN.JHSSuper.Monthly.Postpaid', subs:'8,295', refPrice:'₹149',
+    desc:'Only partner SKU with explicit Super tier choice in OTT menu',
+    purchaseJourney: VI_SUPER_M_PJ,
+    flows:[['A',VI_SUPER_M_A],['B',VI_SUPER_M_B]]
+  },
+  'vi-super-y': {
+    name:'Vi Super Yearly', group:'vi', color:'super',
+    sku:'VI.IN.JHSSuper.Yearly.Postpaid', subs:'23,401', refPrice:'₹1,099',
+    desc:'Largest intentional Super B2B segment',
+    purchaseJourney: VI_SUPER_Y_PJ,
+    flows:[['A',VI_SUPER_Y_A],['B',VI_SUPER_Y_B]]
+  },
+  'at-28d': {
+    name:'Airtel Prepaid 28d', group:'airtel', color:'jio',
+    sku:'AIRTEL.IN.JHSMobile.28days', subs:'9.3M', refPrice:'₹79',
+    desc:'Largest single Airtel B2B segment',
+    purchaseJourney: AT_28D_PJ,
+    flows:[['A',AT_28D_A],['B',AT_28D_B],['C',AT_28D_C]]
+  },
+  'at-monthly': {
+    name:'Airtel Prepaid Monthly', group:'airtel', color:'jio',
+    sku:'AIRTEL.IN.JHSMobile.Monthly', subs:'3.2M', refPrice:'₹79',
+    desc:'30-day calendar-cycle Airtel prepaid',
+    purchaseJourney: AT_M_PJ,
+    flows:[['A',AT_M_A],['B',AT_M_B]]
+  },
+  'at-quarterly': {
+    name:'Airtel Prepaid Quarterly', group:'airtel', color:'jio',
+    sku:'AIRTEL.IN.JHSMobile.3Month', subs:'1.8M', refPrice:'₹149',
+    desc:'90-day prepaid cycle',
+    purchaseJourney: AT_Q_PJ,
+    flows:[['A',AT_Q_A],['B',AT_Q_B]]
+  },
+  'at-y-pre': {
+    name:'Airtel Yearly Prepaid', group:'airtel', color:'jio',
+    sku:'AIRTEL.IN.JHSMobile.Yearly', subs:'0.7M', refPrice:'₹299',
+    desc:'12-month Airtel prepaid',
+    purchaseJourney: AT_YPRE_PJ,
+    flows:[['A',AT_YPRE_A],['B',AT_YPRE_B]]
+  },
+  'at-y-post': {
+    name:'Airtel Yearly Postpaid', group:'airtel', color:'jio',
+    sku:'AIRTEL.IN.JHSMobile.Yearly.Postpaid', subs:'0.5M', refPrice:'₹299',
+    desc:'12-month postpaid Mobile bundle',
+    purchaseJourney: AT_YPOST_PJ,
+    flows:[['A',AT_YPOST_A],['B',AT_YPOST_B]]
+  },
+  'at-super-m': {
+    name:'Airtel Super Monthly', group:'airtel', color:'super',
+    sku:'AIRTEL.IN.JHSSuper.Monthly', subs:'11,238', refPrice:'₹149',
+    desc:'Monthly postpaid Super tier',
+    purchaseJourney: AT_SUPER_M_PJ,
+    flows:[['A',AT_SUPER_M_A],['B',AT_SUPER_M_B]]
+  },
+  'at-super-q': {
+    name:'Airtel Super Quarterly', group:'airtel', color:'super',
+    sku:'AIRTEL.IN.JHSSuper.3Month', subs:'7,142', refPrice:'₹349',
+    desc:'Quarterly postpaid Super',
+    purchaseJourney: AT_SUPER_Q_PJ,
+    flows:[['A',AT_SUPER_Q_A],['B',AT_SUPER_Q_B]]
+  },
+  'at-dth': {
+    name:'Airtel DTH Yearly Super', group:'airtel', color:'super',
+    sku:'AIRTEL.IN.DTH.Super.Yearly', subs:'1.1M', refPrice:'₹699',
+    desc:'DTH set-top-box bundle · Yearly Super',
+    purchaseJourney: AT_DTH_PJ,
+    flows:[['A',AT_DTH_A],['B',AT_DTH_B]]
+  },
+  'at-bb': {
+    name:'Airtel Broadband Super', group:'airtel', color:'super',
+    sku:'AIRTEL.IN.Broadband.Super.Monthly', subs:'0.4M', refPrice:'₹999+',
+    desc:'Xstream Box broadband bundle · Super tier',
+    purchaseJourney: AT_BB_PJ,
+    flows:[['A',AT_BB_A],['B',AT_BB_B]]
+  },
+  'bsnl': {
+    name:'BSNL ₹499 OTT Pack', group:'bsnl', color:'bsnl',
+    sku:'BSNL.IN.JHSMobile.OTTPack', subs:'0.05M', refPrice:'₹79',
+    desc:'Low-volume BSNL OTT bundle',
+    purchaseJourney: BSNL_PJ,
+    flows:[['A',BSNL_A],['B',BSNL_B]]
+  }
+};
+
+/* ═════════════════════════════════════════════ B2B MASTER OVERVIEW ═════════════════════════════════════════════ */
+function renderB2BMaster(){
+  const w=1760, h=540;
+  const parts=[`<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">`];
+
+  // column dividers
+  parts.push(`<line x1="350" y1="20" x2="350" y2="520" stroke="${COLORS.line}" stroke-width="1" stroke-dasharray="2 3"/>`);
+  parts.push(`<line x1="700" y1="20" x2="700" y2="520" stroke="${COLORS.line}" stroke-width="1" stroke-dasharray="2 3"/>`);
+  parts.push(`<line x1="1050" y1="20" x2="1050" y2="520" stroke="${COLORS.line}" stroke-width="1" stroke-dasharray="2 3"/>`);
+  parts.push(`<line x1="1400" y1="20" x2="1400" y2="520" stroke="${COLORS.line}" stroke-width="1" stroke-dasharray="2 3"/>`);
+
+  // ─── Partner Activation (col 1) ───
+  const partnerGroups = [
+    { y:60, name:'Jio (Prepaid + Postpaid + Fiber)', color:COLORS.mobile, sub:'~177M subs · 4 SKUs' },
+    { y:170, name:'Vi (Prepaid + Postpaid + Super)', color:COLORS.vi, sub:'~3.6M subs · 7 SKUs' },
+    { y:280, name:'Airtel (Prepaid + Postpaid + DTH + BB)', color:COLORS.airtel, sub:'~17M subs · 9 SKUs' },
+    { y:390, name:'BSNL OTT Pack', color:COLORS.bsnl, sub:'~50K subs · 1 SKU' }
+  ];
+  partnerGroups.forEach(p=>{
+    parts.push(`<rect x="30" y="${p.y}" width="290" height="60" rx="6" fill="${COLORS.bgC || '#141420'}" stroke="${p.color}" stroke-width="1"/>`);
+    parts.push(`<circle cx="50" cy="${p.y+30}" r="6" fill="${p.color}"/>`);
+    parts.push(`<text class="t-code" x="68" y="${p.y+26}">${p.name}</text>`);
+    parts.push(`<text class="t-note-sm" x="68" y="${p.y+44}">${p.sub}</text>`);
+  });
+
+  // arrows to API signal
+  partnerGroups.forEach(p=>{
+    parts.push(`<line x1="320" y1="${p.y+30}" x2="380" y2="${p.y+30}" stroke="${p.color}" stroke-width="1.2"/>`);
+  });
+
+  // ─── API Signal (col 2) ───
+  parts.push(`<text class="t-code-sm" x="380" y="85" fill="${COLORS.text2}">Telco SDP API webhook</text>`);
+  parts.push(`<rect x="380" y="95" width="290" height="40" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.line}"/>`);
+  parts.push(`<text class="t-note-sm" x="395" y="115">Partner Name + plan ID + subscriber</text>`);
+  parts.push(`<text class="t-note-sm" x="395" y="127">ID + start date + duration</text>`);
+
+  parts.push(`<rect x="380" y="195" width="290" height="40" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.line}"/>`);
+  parts.push(`<text class="t-note-sm" x="395" y="215">OTT picker selection (active SKUs)</text>`);
+  parts.push(`<text class="t-note-sm" x="395" y="227">vs auto-bundle (passive SKUs)</text>`);
+
+  parts.push(`<rect x="380" y="305" width="290" height="40" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.line}"/>`);
+  parts.push(`<text class="t-note-sm" x="395" y="325">Plan ID maps to SKU →</text>`);
+  parts.push(`<text class="t-note-sm" x="395" y="337">Mobile / Super tier resolved</text>`);
+
+  parts.push(`<rect x="380" y="415" width="290" height="40" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.line}"/>`);
+  parts.push(`<text class="t-note-sm" x="395" y="435">Entitlement created in JHS</text>`);
+  parts.push(`<text class="t-note-sm" x="395" y="447">No mandate · No UPI</text>`);
+
+  // arrows to Active Sub
+  partnerGroups.forEach(p=>{
+    parts.push(`<line x1="670" y1="${p.y+30}" x2="730" y2="${p.y+30}" stroke="${COLORS.text3}" stroke-width="1.2" stroke-dasharray="2 3"/>`);
+  });
+
+  // ─── Active Subscription (col 3) ───
+  // Mobile tier box
+  parts.push(`<rect x="730" y="55" width="290" height="100" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.mobile}" stroke-width="1"/>`);
+  parts.push(`<text class="t-code" x="745" y="80" fill="${COLORS.mobile}">JHS Mobile entitlement</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="100">1 screen · 480p · Indian content</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="114">Cycle: 28d / 30d / 84d / 365d</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="128">~186M subscribers total</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="142">Most of Jio, Vi, Airtel, BSNL</text>`);
+
+  // Super tier box
+  parts.push(`<rect x="730" y="180" width="290" height="100" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.super}" stroke-width="1"/>`);
+  parts.push(`<text class="t-code" x="745" y="205" fill="${COLORS.super}">JHS Super entitlement</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="225">2 screens · 1080p · + Hollywood</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="239">JioFiber + Vi Super + Airtel Super</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="253">+ Airtel DTH + Airtel Broadband</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="267">~10M subscribers</text>`);
+
+  // Hollywood add-on
+  parts.push(`<rect x="730" y="305" width="290" height="70" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.hollywood2}" stroke-width="1"/>`);
+  parts.push(`<text class="t-code" x="745" y="330" fill="${COLORS.hollywood2}">HotstarMobile bundle</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="350">₹128 = Mobile ₹79 + Hollywood ₹49</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="362">Jio Hollywood add-on SKU</text>`);
+
+  // Telco data note
+  parts.push(`<rect x="730" y="400" width="290" height="70" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.expiry2}" stroke-width="1" stroke-dasharray="3 3"/>`);
+  parts.push(`<text class="t-code" x="745" y="425" fill="${COLORS.expiry2}">Telco data dependency</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="445">Data pack expiry can pause JHS</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="457">access before plan expiry (Jio)</text>`);
+
+  // arrows to Continuation
+  partnerGroups.forEach(p=>{
+    parts.push(`<line x1="1020" y1="${p.y+30}" x2="1080" y2="${p.y+30}" stroke="${COLORS.text3}" stroke-width="1.2" stroke-dasharray="2 3"/>`);
+  });
+
+  // ─── Continuation (col 4) ───
+  parts.push(`<text class="t-code-sm" x="1080" y="60" fill="${COLORS.text2}">At cycle expiry, user may:</text>`);
+  const continuationOptions = [
+    { y:90, label:'A — Recharge / pay bill', color:COLORS.mobile, sub:'Same partner · same SKU · new cycle' },
+    { y:170, label:'B — Switch to D2C', color:COLORS.d2cUp, sub:'New UPI mandate · ₹79+/month' },
+    { y:250, label:'C — Upgrade tier', color:COLORS.premium, sub:'D2C Premium or partner Super' },
+    { y:330, label:'D — Lapse (no action)', color:COLORS.expiry2, sub:'Entitlement removed · BLANK config' },
+    { y:410, label:'+ Top-up / add-on', color:COLORS.hollywood2, sub:'Mid-cycle extension (Jio/Vi)' }
+  ];
+  continuationOptions.forEach(c=>{
+    parts.push(`<rect x="1080" y="${c.y}" width="290" height="55" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${c.color}" stroke-width="1"/>`);
+    parts.push(`<circle cx="1098" cy="${c.y+18}" r="4" fill="${c.color}"/>`);
+    parts.push(`<text class="t-code" x="1110" y="${c.y+22}" fill="${c.color}">${c.label}</text>`);
+    parts.push(`<text class="t-note-sm" x="1110" y="${c.y+42}">${c.sub}</text>`);
+  });
+
+  // arrows to End State
+  continuationOptions.forEach(c=>{
+    parts.push(`<line x1="1370" y1="${c.y+27}" x2="1430" y2="${c.y+27}" stroke="${c.color}" stroke-width="1.2"/>`);
+  });
+
+  // ─── End State (col 5) ───
+  const endStates = [
+    { y:90, label:'Renewed B2B sub', color:COLORS.mobile, sub:'Same Partner Name + SKU' },
+    { y:170, label:'D2C subscriber', color:COLORS.d2cUp, sub:'UPI AutoPay · direct relationship' },
+    { y:250, label:'Upgraded tier', color:COLORS.premium, sub:'Higher ARPU · ₹499–2,199/mo' },
+    { y:330, label:'Silent lapse', color:COLORS.expiry2, sub:'Login credentials retained · no winback' },
+    { y:410, label:'2nd parallel sub', color:COLORS.hollywood2, sub:'Top-up creates separate JIO sub' }
+  ];
+  endStates.forEach(e=>{
+    parts.push(`<rect x="1430" y="${e.y}" width="290" height="55" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${e.color}" stroke-width="1"/>`);
+    parts.push(`<text class="t-code" x="1445" y="${e.y+22}" fill="${e.color}">${e.label}</text>`);
+    parts.push(`<text class="t-note-sm" x="1445" y="${e.y+42}">${e.sub}</text>`);
+  });
+
+  parts.push('</svg>');
+  return parts.join('');
+}
+
+/* ═════════════════════════════════════════════ PARTNER TAGS + PANELS GENERATORS ═════════════════════════════════════════════ */
+function generatePartnerTags(){
+  const container = document.getElementById('b2b-partner-tags');
+  const keys = Object.keys(B2B_PARTNERS);
+  container.innerHTML = keys.map((k,i)=>{
+    const p = B2B_PARTNERS[k];
+    return `<button class="tag${i===0?' active':''}" data-partner="${k}" data-group="${p.group}" data-tip="${p.sku} · ${p.subs} subs · Ref ${p.refPrice}">
+      <span class="tag-dot"></span><span>${p.name}</span>
+    </button>`;
+  }).join('');
+}
+
+function generatePartnerPanels(){
+  const container = document.getElementById('b2b-partner-panels');
+  const keys = Object.keys(B2B_PARTNERS);
+  const html = keys.map((k,i)=>{
+    const p = B2B_PARTNERS[k];
+    const colorVar = p.color === 'super' ? 'var(--super)' : (p.color === 'bsnl' ? 'var(--bsnl)' : (p.color === 'hollywood' ? 'var(--hollywood)' : 'var(--mobile)'));
+
+    // purchase journey timeline
+    const pjSvg = renderTimeline(p.purchaseJourney);
+
+    // each flow card
+    const flowsHtml = p.flows.map(([letter, flow])=>`
+      <div class="flow-card" data-color="${p.color === 'super' ? 'super' : 'jio'}" data-searchable data-search-title="${p.name} — Flow ${letter}: ${flow.title}">
+        <div class="flow-row">
+          <div class="flow-meta">
+            <div class="flow-letter-row"><div class="flow-letter">${letter}</div><div class="flow-title">${flow.title}</div></div>
+            <div class="flow-sub">${flow.meta}</div>
+          </div>
+          <div class="timeline-wrap">${renderTimeline(flow.spec)}</div>
+        </div>
+      </div>
+    `).join('');
+
+    return `
+      <div class="partner-panel${i===0?' active':''}" data-partner="${k}">
+        <div class="partner-panel-head">
+          <div class="partner-name"><span class="pname-dot" style="background:${colorVar}"></span>${p.name}</div>
+          <div class="partner-meta">
+            <span>SKU: <b>${p.sku}</b></span>
+            <span>Subs: <b>${p.subs}</b></span>
+            <span>Ref Price: <b>${p.refPrice}</b></span>
+            <span>Group: <b>${p.group.toUpperCase()}</b></span>
+          </div>
+          <div class="flow-sub" style="margin-top:10px">${p.desc}</div>
+        </div>
+
+        <div class="subsection-title">Purchase Journey</div>
+        <div class="flow-card" data-color="${p.color === 'super' ? 'super' : 'jio'}" data-searchable data-search-title="${p.name} — Purchase Journey">
+          <div class="timeline-wrap">${pjSvg}</div>
+        </div>
+
+        <div class="subsection-title">A, B, C, D Explained</div>
+        ${flowsHtml}
+      </div>
+    `;
+  }).join('');
+  container.innerHTML = html;
+}
+
+</script>
+
+<script>
+/* ═════════════════════════════════════════════ SELECT PLAN (called from SVG tier labels) ═════════════════════════════════════════════ */
+function selectPlan(plan) {
+  /* activate correct plan button */
+  document.querySelectorAll('#d2c-plan-selector .plan-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.plan === plan);
+  });
+  /* show correct flow panel */
+  document.querySelectorAll('#d2c-flow-panels .flow-panel').forEach(fp=>{
+    fp.classList.toggle('active', fp.dataset.plan === plan);
+  });
+  /* scroll to flows */
+  const target = document.getElementById('d2c-flow-panels');
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+
+  /* flash hint */
+  const hint = document.getElementById('plan-hint');
+  if(hint){
+    const names={mobile:'Mobile',super:'Super',premium:'Premium'};
+    hint.textContent = `↓ ${names[plan]} flows — A, B, C, D below`;
+    hint.classList.add('show');
+    setTimeout(()=>hint.classList.remove('show'), 2000);
+  }
+}
+
+
+function generateD2CPanels(){
+  const container = document.getElementById('d2c-flow-panels');
+  const keys = Object.keys(D2C_PLANS);
+  container.innerHTML = keys.map((k,i)=>{
+    const p = D2C_PLANS[k];
+    const flowsHtml = p.flows.map(([letter, flow])=>`
+      <div class="flow-card" data-color="${k}" data-searchable data-search-title="D2C ${p.name} — Flow ${letter}: ${flow.title}">
+        <div class="flow-row">
+          <div class="flow-meta">
+            <div class="flow-letter-row"><div class="flow-letter">${letter}</div><div class="flow-title">${flow.title}</div></div>
+            <div class="flow-sub">${flow.meta}</div>
+          </div>
+          <div class="timeline-wrap">${renderTimeline(flow.spec)}</div>
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="flow-panel${i===0?' active':''}" data-plan="${k}">
+        <div class="flow-panel-head">
+          <div class="flow-panel-eyebrow">D2C ${p.name} · A, B, C, D Explained</div>
+        </div>
+        ${flowsHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ═════════════════════════════════════════════ INIT — RENDER EVERYTHING ═════════════════════════════════════════════ */
+document.getElementById('d2c-master').innerHTML = renderD2CMaster();
+document.getElementById('b2b-master').innerHTML = renderB2BMaster();
+generateD2CPanels();
+generatePartnerTags();
+generatePartnerPanels();
+
+/* ═════════════════════════════════════════════ TOGGLE: D2C ↔ B2B ═════════════════════════════════════════════ */
+document.querySelectorAll('.toggle button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.toggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const view = btn.dataset.view;
+    document.querySelectorAll('section.view').forEach(s=>s.classList.remove('active'));
+    document.getElementById(view+'-view').classList.add('active');
+    // clear search when switching views
+    const s = document.getElementById('search');
+    if(s.value){ s.value=''; runSearch(''); }
+  });
+});
+
+/* ═════════════════════════════════════════════ D2C PLAN BUTTONS ═════════════════════════════════════════════ */
+document.querySelectorAll('#d2c-plan-selector .plan-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#d2c-plan-selector .plan-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const plan = btn.dataset.plan;
+    document.querySelectorAll('#d2c-flow-panels .flow-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector(`#d2c-flow-panels .flow-panel[data-plan="${plan}"]`).classList.add('active');
+  });
+});
+
+/* ═════════════════════════════════════════════ B2B PARTNER TAGS ═════════════════════════════════════════════ */
+document.querySelectorAll('#b2b-partner-tags .tag').forEach(tag=>{
+  tag.addEventListener('click', ()=>{
+    document.querySelectorAll('#b2b-partner-tags .tag').forEach(t=>t.classList.remove('active'));
+    tag.classList.add('active');
+    const partner = tag.dataset.partner;
+    document.querySelectorAll('#b2b-partner-panels .partner-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector(`#b2b-partner-panels .partner-panel[data-partner="${partner}"]`).classList.add('active');
+  });
+});
+
+/* ═════════════════════════════════════════════ TOOLTIP SYSTEM ═════════════════════════════════════════════ */
+const tooltip = document.getElementById('tooltip');
+function showTooltip(content, x, y){
+  tooltip.innerHTML = content;
+  tooltip.classList.add('show');
+  positionTooltip(x,y);
+}
+function hideTooltip(){ tooltip.classList.remove('show'); }
+function positionTooltip(x, y){
+  const tt = tooltip.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let tx = x + 16, ty = y + 16;
+  if(tx + tt.width > vw - 12) tx = x - tt.width - 16;
+  if(ty + tt.height > vh - 12) ty = y - tt.height - 16;
+  if(tx < 12) tx = 12;
+  if(ty < 12) ty = 12;
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top = ty + 'px';
+}
+function buildTipHtml(text, source){
+  const lines = String(text).split('\n');
+  const title = lines.shift();
+  const body = lines.map(l=>{
+    if(l.startsWith('SKU:')||l.startsWith('JIRA:')||l.startsWith('Plan ID:')){
+      return `<span class="tt-tag">${l}</span>`;
+    }
+    return l;
+  }).join('<br>');
+  let meta = '';
+  if(source && source.dataset && source.dataset.searchTitle){
+    meta = `<div class="tt-meta">${source.dataset.searchTitle}</div>`;
+  }
+  return `<div class="tt-title">${title}</div>${body}${meta}`;
+}
+
+document.addEventListener('mouseover', e=>{
+  const target = e.target.closest('[data-tip]');
+  if(target){
+    showTooltip(buildTipHtml(target.dataset.tip, target.closest('[data-search-title]')), e.clientX, e.clientY);
+  }
+});
+document.addEventListener('mousemove', e=>{
+  if(tooltip.classList.contains('show')){
+    positionTooltip(e.clientX, e.clientY);
+  }
+});
+document.addEventListener('mouseout', e=>{
+  const target = e.target.closest('[data-tip]');
+  if(target){ hideTooltip(); }
+});
+
+/* Generic flow-card hover: show flow title + meta even when no explicit tip */
+document.querySelectorAll('.flow-card[data-search-title]').forEach(card=>{
+  card.addEventListener('mouseenter', e=>{
+    if(e.target.closest('[data-tip]')) return; // explicit tip wins
+    const sub = card.querySelector('.flow-sub');
+    if(sub){
+      const title = card.dataset.searchTitle;
+      showTooltip(`<div class="tt-title">${title}</div>${sub.textContent}`, e.clientX, e.clientY);
+    }
+  });
+  card.addEventListener('mouseleave', ()=>{
+    if(!event.target.closest('[data-tip]')) hideTooltip();
+  });
+});
+
+/* Partner tag hover */
+document.querySelectorAll('.tag[data-tip]').forEach(tag=>{
+  // already handled by global tip handler above (data-tip set)
+});
+
+/* Plan button hover */
+document.querySelectorAll('.plan-btn').forEach(btn=>{
+  btn.addEventListener('mouseenter', e=>{
+    const plan = btn.dataset.plan;
+    const planNames = {mobile:'Mobile · ₹79 entry tier · 480p · 1 screen · Indian content',
+                      super:'Super · ₹149 entry tier · 1080p · 2 screens · + Hollywood, TV cast',
+                      premium:'Premium · ₹499 entry tier · 4K · 4 screens · all content · no ads'};
+    showTooltip(`<div class="tt-title">D2C ${plan[0].toUpperCase()+plan.slice(1)}</div>${planNames[plan]}<div class="tt-meta">Click to see A/B/C/D flows</div>`, e.clientX, e.clientY);
+  });
+  btn.addEventListener('mouseleave', hideTooltip);
+});
+
+/* ═════════════════════════════════════════════ SEARCH ═════════════════════════════════════════════ */
+const searchInput = document.getElementById('search');
+const searchCount = document.getElementById('search-count');
+
+function clearHighlights(root){
+  // Remove HTML marks
+  root.querySelectorAll('mark').forEach(m=>{
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+  // Remove SVG highlight rects and restore text fills
+  root.querySelectorAll('.svg-search-hl').forEach(r=>r.remove());
+  root.querySelectorAll('.svg-text-hit').forEach(t=>{
+    t.classList.remove('svg-text-hit');
+  });
+}
+
+function highlightTextNodes(root, query){
+  if(!query) return 0;
+  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const matches=[];
+  let n;
+  while(n = walker.nextNode()){
+    const tag = n.parentNode.tagName ? n.parentNode.tagName.toUpperCase() : '';
+    if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'MARK') continue;
+    re.lastIndex=0;
+    if(re.test(n.textContent)){
+      matches.push(n);
+    }
+  }
+  let count=0;
+  matches.forEach(node=>{
+    const parent = node.parentNode;
+    const isInSvg = parent.namespaceURI === 'http://www.w3.org/2000/svg' || (parent.closest && parent.closest('svg'));
+    const text = node.textContent;
+
+    if(isInSvg){
+      // For SVG text: draw a highlight rect behind the text element
+      const svgTextEl = parent.tagName && parent.tagName.toLowerCase() === 'text'
+        ? parent
+        : (parent.closest ? parent.closest('text') : null);
+      if(svgTextEl && svgTextEl.ownerSVGElement){
+        try {
+          re.lastIndex=0;
+          if(re.test(text)){
+            const bb = svgTextEl.getBBox();
+            const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            rect.setAttribute('x', bb.x - 3);
+            rect.setAttribute('y', bb.y - 2);
+            rect.setAttribute('width', bb.width + 6);
+            rect.setAttribute('height', bb.height + 4);
+            rect.setAttribute('rx', '2');
+            rect.setAttribute('fill', '#ffffff');
+            rect.classList.add('svg-search-hl');
+            svgTextEl.parentNode.insertBefore(rect, svgTextEl);
+            // Make text black via inline style — CSS class fills would otherwise
+            // override a presentation attribute, so style (highest precedence) is required
+            svgTextEl.classList.add('svg-text-hit');
+            count++;
+          }
+        } catch(e){}
+      }
+    } else {
+      // For HTML: wrap matched portions with <mark>
+      re.lastIndex=0;
+      const frag = document.createDocumentFragment();
+      text.split(re).forEach(part=>{
+        if(part.toLowerCase() === query.toLowerCase()){
+          const mk = document.createElement('mark');
+          mk.textContent = part;
+          frag.appendChild(mk);
+          count++;
+        } else {
+          frag.appendChild(document.createTextNode(part));
+        }
+      });
+      parent.replaceChild(frag, node);
+    }
+  });
+  return count;
+}
+
+function runSearch(query){
+  // Clear previous
+  document.querySelectorAll('.search-dim').forEach(el=>el.classList.remove('search-dim'));
+  document.querySelectorAll('.search-hit').forEach(el=>el.classList.remove('search-hit'));
+  document.querySelectorAll('main').forEach(m=>clearHighlights(m));
+
+  if(!query || query.length<2){
+    searchCount.textContent = '';
+    return;
+  }
+  const q = query.toLowerCase();
+  // Search inside currently-active view to keep scope manageable
+  const view = document.querySelector('section.view.active');
+  if(!view) return;
+
+  // Also search across both views if the term is global — but UX is cleaner if we filter active view first.
+  // We'll cross-filter: if no hits in active view, search the other view and toggle to it.
+  let hits = view.querySelectorAll('[data-searchable]');
+  let matched = [];
+  hits.forEach(card=>{
+    const text = card.textContent.toLowerCase();
+    const searchTitle = (card.dataset.searchTitle || '').toLowerCase();
+    if(text.includes(q) || searchTitle.includes(q)){
+      matched.push(card);
+    } else {
+      card.classList.add('search-dim');
+    }
+  });
+
+  // If nothing in active view, try the other view
+  if(matched.length === 0){
+    const otherViewId = view.id === 'd2c-view' ? 'b2b-view' : 'd2c-view';
+    const otherView = document.getElementById(otherViewId);
+    const otherHits = otherView.querySelectorAll('[data-searchable]');
+    let otherMatched = [];
+    otherHits.forEach(card=>{
+      const text = card.textContent.toLowerCase();
+      const searchTitle = (card.dataset.searchTitle || '').toLowerCase();
+      if(text.includes(q) || searchTitle.includes(q)){
+        otherMatched.push(card);
+      }
+    });
+    if(otherMatched.length > 0){
+      // Switch view
+      document.querySelectorAll('.toggle button').forEach(b=>b.classList.remove('active'));
+      document.querySelector(`.toggle button[data-view="${otherViewId.replace('-view','')}"]`).classList.add('active');
+      document.querySelectorAll('section.view').forEach(s=>s.classList.remove('active'));
+      otherView.classList.add('active');
+      // Re-run search
+      otherHits.forEach(card=>{
+        const text = card.textContent.toLowerCase();
+        const searchTitle = (card.dataset.searchTitle || '').toLowerCase();
+        if(!(text.includes(q) || searchTitle.includes(q))){
+          card.classList.add('search-dim');
+        }
+      });
+      matched = otherMatched;
+    }
+  }
+
+  matched.forEach(c=>c.classList.add('search-hit'));
+  // highlight text
+  const activeView = document.querySelector('section.view.active');
+  let highlightCount = 0;
+  matched.forEach(card=>{
+    highlightCount += highlightTextNodes(card, query);
+  });
+
+  // Also auto-expand the plan/partner panel that contains the first hit, if not already active
+  if(matched.length > 0){
+    const first = matched[0];
+    const flowPanel = first.closest('.flow-panel');
+    if(flowPanel && !flowPanel.classList.contains('active')){
+      const plan = flowPanel.dataset.plan;
+      document.querySelectorAll('#d2c-plan-selector .plan-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector(`#d2c-plan-selector .plan-btn[data-plan="${plan}"]`)?.classList.add('active');
+      document.querySelectorAll('#d2c-flow-panels .flow-panel').forEach(p=>p.classList.remove('active'));
+      flowPanel.classList.add('active');
+    }
+    const partnerPanel = first.closest('.partner-panel');
+    if(partnerPanel && !partnerPanel.classList.contains('active')){
+      const partner = partnerPanel.dataset.partner;
+      document.querySelectorAll('#b2b-partner-tags .tag').forEach(t=>t.classList.remove('active'));
+      document.querySelector(`#b2b-partner-tags .tag[data-partner="${partner}"]`)?.classList.add('active');
+      document.querySelectorAll('#b2b-partner-panels .partner-panel').forEach(p=>p.classList.remove('active'));
+      partnerPanel.classList.add('active');
+    }
+    // scroll first match into view
+    first.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  searchCount.textContent = matched.length > 0
+    ? `${matched.length} card${matched.length>1?'s':''} · ${highlightCount} match${highlightCount===1?'':'es'}`
+    : 'No matches';
+}
+
+let searchDebounce;
+searchInput.addEventListener('input', e=>{
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>runSearch(e.target.value.trim()), 180);
+});
+searchInput.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ searchInput.value=''; runSearch(''); searchInput.blur(); }
+});
+
+/* ═════════════════════════════════════════════ KEYBOARD SHORTCUTS ═════════════════════════════════════════════ */
+document.addEventListener('keydown', e=>{
+  if((e.metaKey || e.ctrlKey) && e.key === 'k'){
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  if((e.metaKey || e.ctrlKey) && e.key === '/'){
+    e.preventDefault();
+    // toggle view
+    const active = document.querySelector('.toggle button.active');
+    const other = document.querySelector(`.toggle button:not(.active)`);
+    if(other) other.click();
+  }
+});
+
+</script>
+</body>
+</html>
