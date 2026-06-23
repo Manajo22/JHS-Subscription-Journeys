@@ -294,7 +294,11 @@ section.view.active{display:block}
 #screen-preview img{display:block;width:240px;height:auto;border-radius:14px}
 #screen-preview .sp-cap{
   font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-2);
-  text-align:center;padding:8px 4px 3px;letter-spacing:.02em;max-width:240px;
+  text-align:center;padding:8px 4px 2px;letter-spacing:.02em;max-width:240px;
+}
+#screen-preview .sp-disclaimer{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-3);
+  text-align:center;padding:0 4px 5px;letter-spacing:.02em;font-style:italic;opacity:.7;
 }
 /* HTML screen chip used in flow cards */
 .screen-chip{
@@ -396,9 +400,126 @@ text.svg-text-hit{fill:#000000 !important;font-weight:600}
 .plan-selected-hint.show{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 
+/* ───────────── PASSWORD GATE ───────────── */
+#pw-gate{
+  position:fixed;inset:0;z-index:99999;
+  background:#080810;
+  display:flex;align-items:center;justify-content:center;
+}
+#pw-gate.unlocked{display:none}
+.pw-card{
+  background:#111118;border:1px solid #2a2a3a;border-radius:18px;
+  padding:44px 48px 40px;width:360px;
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;align-items:center;
+}
+.pw-logo{
+  font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;
+  color:#5a5a7a;text-transform:uppercase;margin-bottom:28px;
+}
+.pw-logo span{color:#e8e8ff;font-weight:700}
+.pw-title{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a5a7a;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px;
+}
+.pw-input-wrap{position:relative;width:100%;margin-bottom:14px}
+.pw-input-wrap input{
+  width:100%;box-sizing:border-box;
+  background:#0a0a14;border:1px solid #2a2a3a;border-radius:10px;
+  padding:13px 44px 13px 16px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  color:#e8e8ff;letter-spacing:.04em;outline:none;
+  transition:border-color .18s;
+}
+.pw-input-wrap input:focus{border-color:#4a4a7a}
+.pw-input-wrap input.pw-error{border-color:#f87171;animation:pw-shake .28s ease}
+.pw-toggle{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:2px;color:#5a5a7a;
+  display:flex;align-items:center;
+}
+.pw-toggle:hover{color:#a0a0c0}
+.pw-btn{
+  width:100%;padding:13px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#3a3a8a,#5a3a9a);
+  color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  transition:opacity .15s,transform .1s;
+}
+.pw-btn:hover{opacity:.88}
+.pw-btn:active{transform:scale(.98)}
+.pw-err-msg{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  color:#f87171;text-align:center;margin-top:10px;
+  min-height:16px;letter-spacing:.04em;
+}
+@keyframes pw-shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════ PASSWORD GATE ═══════════════════ -->
+<div id="pw-gate">
+  <div class="pw-card">
+    <div class="pw-logo">JHS <span>Flow Atlas</span></div>
+    <div class="pw-title">Enter password to continue</div>
+    <div class="pw-input-wrap">
+      <input type="password" id="pw-input" placeholder="Password" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')pwSubmit()"/>
+      <button class="pw-toggle" onclick="pwToggle()" tabindex="-1" aria-label="Show/hide password">
+        <svg id="pw-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+    <button class="pw-btn" onclick="pwSubmit()">Unlock</button>
+    <div class="pw-err-msg" id="pw-err"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Check session so refresh doesn't re-lock
+  if(sessionStorage.getItem('jhs_auth')==='1'){
+    document.getElementById('pw-gate').classList.add('unlocked');
+  }
+  window.pwSubmit=function(){
+    const inp=document.getElementById('pw-input');
+    const err=document.getElementById('pw-err');
+    if(inp.value==='JHS_Subscriptions_2026'){
+      sessionStorage.setItem('jhs_auth','1');
+      document.getElementById('pw-gate').classList.add('unlocked');
+    } else {
+      err.textContent='Incorrect password';
+      inp.classList.add('pw-error');
+      inp.value='';
+      setTimeout(()=>inp.classList.remove('pw-error'),400);
+      inp.focus();
+    }
+  };
+  window.pwToggle=function(){
+    const inp=document.getElementById('pw-input');
+    const eye=document.getElementById('pw-eye');
+    if(inp.type==='password'){
+      inp.type='text';
+      eye.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type='password';
+      eye.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  };
+  // Focus input on load
+  window.addEventListener('load',()=>{
+    const inp=document.getElementById('pw-input');
+    if(inp) inp.focus();
+  });
+})();
+</script>
 
 <!-- ═════════════════════════════════════════════ HEADER ═════════════════════════════════════════════ -->
 <header>
@@ -1879,7 +2000,7 @@ const AT_28D_PJ = {
       top:'Airtel Prepaid 28d',
       script:'OTT picker selection at recharge', scriptX: 540,
       mandate:'Plan ID: HOTSTAR_28 · ₹79 ref',
-      tip:'Airtel Prepaid 28d\nSKU: AIRTEL.IN.JHSMobile.28days\n9.3M subscribers · JIRA: PREM-30748\nLargest single Airtel B2B segment' }
+      tip:'Airtel Prepaid 28d\nSKU: AIRTEL.IN.JHSMobile.28days\n9.3M subscribers · JIRA: PREM-30748\nLargest single Airtel B2B segment\n⚠ No Hollywood · Mobile tier only' }
   ],
   markers: [{ x: 1380, label:'28-day\nexpiry', fromY: 30, toY: 170 }]
 };
@@ -1930,7 +2051,7 @@ const AT_M_PJ = {
       top:'Airtel Prepaid Monthly',
       script:'30-day calendar cycle', scriptX: 540,
       mandate:'Plan ID: HOTSTAR_MOBILE_M · ₹79 ref',
-      tip:'Airtel Prepaid Monthly\nSKU: AIRTEL.IN.JHSMobile.Monthly\n3.2M subs · JIRA: PREM-30749' }
+      tip:'Airtel Prepaid Monthly\nSKU: AIRTEL.IN.JHSMobile.Monthly\n3.2M subs · JIRA: PREM-30749\n⚠ No Hollywood · Mobile tier only' }
   ],
   markers: [{ x: 1380, label:'30-day\nexpiry', fromY: 30, toY: 170 }]
 };
@@ -1968,7 +2089,7 @@ const AT_Q_PJ = {
       top:'Airtel Prepaid Quarterly (3M)',
       script:'90-day prepaid cycle', scriptX: 540,
       mandate:'Plan ID: HOTSTAR_3M · ₹149 ref',
-      tip:'Airtel Prepaid Quarterly\nSKU: AIRTEL.IN.JHSMobile.3Month\n1.8M subs · JIRA: PREM-30750' }
+      tip:'Airtel Prepaid Quarterly\nSKU: AIRTEL.IN.JHSMobile.3Month\n1.8M subs · JIRA: PREM-30750\n⚠ No Hollywood · Mobile tier only' }
   ],
   markers: [{ x: 1380, label:'90-day\nexpiry', fromY: 30, toY: 170 }]
 };
@@ -2006,7 +2127,7 @@ const AT_YPRE_PJ = {
       top:'Airtel Yearly Prepaid',
       script:'12-month prepaid cycle', scriptX: 540,
       mandate:'Plan ID: HOTSTAR_1Y · ₹299 ref',
-      tip:'Airtel Yearly Prepaid\nSKU: AIRTEL.IN.JHSMobile.Yearly\n0.7M subs · JIRA: PREM-30751' }
+      tip:'Airtel Yearly Prepaid\nSKU: AIRTEL.IN.JHSMobile.Yearly\n0.7M subs · JIRA: PREM-30751\n⚠ No Hollywood · Mobile tier only' }
   ],
   markers: [{ x: 1380, label:'12M\nexpiry', fromY: 30, toY: 170 }]
 };
@@ -2329,28 +2450,28 @@ const B2B_PARTNERS = {
   'at-28d': {
     name:'Airtel Prepaid 28d', group:'airtel', color:'jio',
     sku:'AIRTEL.IN.JHSMobile.28days', subs:'9.3M', refPrice:'₹79',
-    desc:'Largest single Airtel B2B segment',
+    desc:'Largest single Airtel B2B segment · Mobile tier only · No Hollywood',
     purchaseJourney: AT_28D_PJ,
     flows:[['A',AT_28D_A],['B',AT_28D_B],['C',AT_28D_C]]
   },
   'at-monthly': {
     name:'Airtel Prepaid Monthly', group:'airtel', color:'jio',
     sku:'AIRTEL.IN.JHSMobile.Monthly', subs:'3.2M', refPrice:'₹79',
-    desc:'30-day calendar-cycle Airtel prepaid',
+    desc:'30-day calendar-cycle Airtel prepaid · Mobile tier only · No Hollywood',
     purchaseJourney: AT_M_PJ,
     flows:[['A',AT_M_A],['B',AT_M_B]]
   },
   'at-quarterly': {
     name:'Airtel Prepaid Quarterly', group:'airtel', color:'jio',
     sku:'AIRTEL.IN.JHSMobile.3Month', subs:'1.8M', refPrice:'₹149',
-    desc:'90-day prepaid cycle',
+    desc:'90-day prepaid cycle · Mobile tier only · No Hollywood',
     purchaseJourney: AT_Q_PJ,
     flows:[['A',AT_Q_A],['B',AT_Q_B]]
   },
   'at-y-pre': {
     name:'Airtel Yearly Prepaid', group:'airtel', color:'jio',
     sku:'AIRTEL.IN.JHSMobile.Yearly', subs:'0.7M', refPrice:'₹299',
-    desc:'12-month Airtel prepaid',
+    desc:'12-month Airtel prepaid · Mobile tier only · No Hollywood',
     purchaseJourney: AT_YPRE_PJ,
     flows:[['A',AT_YPRE_A],['B',AT_YPRE_B]]
   },
@@ -2475,10 +2596,11 @@ function renderB2BMaster(){
   parts.push(`<text class="t-note-sm" x="745" y="362">Jio Hollywood add-on SKU</text>`);
 
   // Telco data note
-  parts.push(`<rect x="730" y="400" width="290" height="70" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.expiry2}" stroke-width="1" stroke-dasharray="3 3"/>`);
-  parts.push(`<text class="t-code" x="745" y="425" fill="${COLORS.expiry2}">Telco data dependency</text>`);
-  parts.push(`<text class="t-note-sm" x="745" y="445">Data pack expiry can pause JHS</text>`);
-  parts.push(`<text class="t-note-sm" x="745" y="457">access before plan expiry (Jio)</text>`);
+  parts.push(`<rect x="730" y="400" width="290" height="82" rx="6" fill="${COLORS.bgC||'#141420'}" stroke="${COLORS.expiry2}" stroke-width="1" stroke-dasharray="3 3"/>`);
+  parts.push(`<text class="t-code" x="745" y="422" fill="${COLORS.expiry2}">Telco data dependency</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="440">If telco data lapses mid-cycle,</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="453">JHS access may be blocked — but</text>`);
+  parts.push(`<text class="t-note-sm" x="745" y="466">JHS subscription stays active</text>`);
 
   // arrows to Continuation
   partnerGroups.forEach(p=>{
@@ -2752,7 +2874,7 @@ const screenPreview = document.getElementById('screen-preview');
 function showScreen(id, x, y){
   const s = (typeof SCREENS !== 'undefined') ? SCREENS[id] : null;
   if(!s){ return; }
-  screenPreview.innerHTML = `<img src="${s.src}" alt="${s.label||''}"><div class="sp-cap">${s.label||''}</div>`;
+  screenPreview.innerHTML = `<img src="${s.src}" alt="${s.label||''}"><div class="sp-cap">${s.label||''}</div><div class="sp-disclaimer">Actual screen may vary</div>`;
   screenPreview.classList.add('show');
   positionScreen(x, y);
 }
